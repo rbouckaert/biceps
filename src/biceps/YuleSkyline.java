@@ -214,7 +214,7 @@ public class YuleSkyline extends EpochTreeDistribution {
         
         prevMean = (alpha + eventCounts)/(beta + L);
 
-        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, beta + L, GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, 1.0/(beta + L), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
         double newLambda = g.sample();
 		return newLambda;
 	}
