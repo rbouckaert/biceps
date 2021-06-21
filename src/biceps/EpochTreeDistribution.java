@@ -20,8 +20,10 @@ public class EpochTreeDistribution extends TreeDistribution {
 
     protected IntegerParameter groupSizes;
     protected TreeIntervals intervals;
-    protected boolean m_bIsPrepared = false, linkedMean = false, logMeans = false;
+    protected boolean isPrepared = false, linkedMean = false, logMeans = false;
     protected double prevMean;
+    
+    protected MyRandomizer myRandomizer = new MyRandomizer();
 
     @Override
     public void initAndValidate() {
@@ -101,11 +103,10 @@ public class EpochTreeDistribution extends TreeDistribution {
         }
 
         assert (intervals.getSampleCount() == intervalCount);
-        m_bIsPrepared = true;
+        isPrepared = true;
     }
 
 
-    MyRandomizer myRandomizer = new MyRandomizer();
 	/**
 	 *  this class is used to make sure the apache library uses random numbers from the BEAST Randomizer
 	 *  so that the MCMC chain remains deterministic and starting with a certain seed twice will result in
@@ -168,24 +169,24 @@ public class EpochTreeDistribution extends TreeDistribution {
 		public double nextGaussian() {
 			return Randomizer.nextGaussian();
 		}
-		
 	}
+	
 
     @Override
     public void store() {
-        m_bIsPrepared = false;
+        isPrepared = false;
         super.store();
     }
 
     @Override
     public void restore() {
-        m_bIsPrepared = false;
+        isPrepared = false;
         super.restore();
     }
 
     @Override
     protected boolean requiresRecalculation() {
-        m_bIsPrepared = false;
+        isPrepared = false;
         return true;
     }
 }
