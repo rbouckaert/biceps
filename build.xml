@@ -216,12 +216,9 @@
 		<copy todir="${Add_on_dir}">
 			<fileset dir="${distBICEPS}" includes="BICEPS.src.jar" />
 		</copy>
-		<!--
 		<copy todir="${Add_on_dir}/templates">
 			<fileset file="templates/BICEPS.xml" />
-			<fileset file="templates/AutoPartition.xml" />
 		</copy>
-		-->
 
 		<jar jarfile="${distBICEPS}/BICEPS.addon.v${BICEPSversion}.zip">
 			<fileset dir="${Add_on_dir}">

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
 
+import beast.app.beauti.Beauti;
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
@@ -18,10 +19,10 @@ import beast.util.Randomizer;
 @Description("Bayesian Integrated Coalescent Epoch PlotS: "
 		+ "Bayesian skyline plot that integrates out population sizes under an inverse gamma prior")
 public class BICEPS extends TreeDistribution {
-    final public Input<RealParameter> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
-    final public Input<RealParameter> populationMeanInput = new Input<>("populationMean", "Mean of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
     public Input<Double> ploidyInput = new Input<>("ploidy", "Ploidy (copy number) for the gene, typically a whole number or half (default is 2) "
     		+ "autosomal nuclear: 2, X: 1.5, Y: 0.5, mitrochondrial: 0.5.", 2.0);
+    final public Input<RealParameter> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
+    final public Input<RealParameter> populationMeanInput = new Input<>("populationMean", "Mean of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
     final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes", "the group sizes parameter", Validate.REQUIRED);
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", false);
@@ -45,6 +46,9 @@ public class BICEPS extends TreeDistribution {
     public void initAndValidate() {
     	super.initAndValidate();
     	
+    	if (Beauti.isInBeauti()) {
+    		return;
+    	}
     	populationShape = populationShapeInput.get();
     	populationMean = populationMeanInput.get();
     	linkedMean = linkedMeanInput.get();

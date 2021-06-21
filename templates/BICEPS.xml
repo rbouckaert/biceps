@@ -6,10 +6,11 @@
     <mergewith point='treePriorTemplates'>
 
         <!-- Coalescent for Bayesian skyline -->
-        <subtemplate id='BICEPS' class='beast.evolution.tree.coalescent.Coalescent'
+        <subtemplate id='BICEPS' class='biceps.BICEPS'
                      mainid='BICEPS.t:$(n)'
-                     suppressInputs='beast.math.distributions.MarkovChainDistribution.parameter,
-                     beast.math.distributions.MarkovChainDistribution.initialMean'>
+                     suppressInputs='biceps.BICEPS.tree,
+                     biceps.BICEPS.treeIntervals,
+                     biceps.BICEPS.groupSizes'>
             <![CDATA[
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"
