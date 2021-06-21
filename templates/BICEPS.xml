@@ -14,7 +14,7 @@
             <![CDATA[
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"
-                
+                ploidy="1.0"
                 linkedMean="true" logMeans="false"
                >
                 <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10">1</groupSizes>

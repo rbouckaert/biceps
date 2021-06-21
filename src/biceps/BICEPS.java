@@ -23,7 +23,11 @@ public class BICEPS extends TreeDistribution {
     		+ "autosomal nuclear: 2, X: 1.5, Y: 0.5, mitrochondrial: 0.5.", 2.0);
     final public Input<RealParameter> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
     final public Input<RealParameter> populationMeanInput = new Input<>("populationMean", "Mean of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
-    final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes", "the group sizes parameter", Validate.REQUIRED);
+    final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes", "the group sizes parameter. If not specified, a fixed set of group sizes determined by the groupCount input will be used");
+    final public Input<Integer> groupCountInput = new Input<>("groupCount", "the number of groups used, which determines the dimension of the groupSizes parameter. "
+    		+ "If less than zero (default) 10 groups will be used, "
+    		+ "unless group sizes are larger than 30 (then group count = number of taxa/30) or "
+    		+ "less than 6 (then group count = number of taxa/6", -1);
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", false);
     final public Input<Boolean> logMeansInput = new Input<>("logMeans", "log mean population size estimates for each epoch", false);
@@ -62,7 +66,23 @@ public class BICEPS extends TreeDistribution {
             throw new IllegalArgumentException("only tree intervals (not tree) should not be specified");
         }
         intervals = treeIntervalsInput.get();
+        
+        int groupCount = groupCountInput.get();
+        if (groupCount <= 0) {
+        	groupCount = 10;
+        	int n = intervals.treeInput.get().getInternalNodeCount();
+        	if (n/10 > 30) {
+        		groupCount = n/30;
+        	} else if (n/10 < 6) {
+        		groupCount = n/6;
+        	}
+        }
         groupSizes = groupSizeParamInput.get();
+        if (groupSizes == null) {
+        	groupSizes = new IntegerParameter("1");
+        }
+        groupSizes.setDimension(groupCount);
+        
 
         // make sure that the sum of groupsizes == number of coalescent events
         int events = intervals.treeInput.get().getInternalNodeCount();
@@ -272,14 +292,14 @@ public class BICEPS extends TreeDistribution {
 	public void init(PrintStream out) {
 		super.init(out);
         for (int i = 1; i <= groupSizes.getDimension(); i++) {
-        	out.print("ibspPopSizes." + i+ "\t");
+        	out.print("PopSizes." + i+ "\t");
         }
         for (int i = 1; i <= groupSizes.getDimension(); i++) {
-        	out.print("ibspGroupSizes." + i+ "\t");
+        	out.print("GroupSizes." + i+ "\t");
         }
         if (logMeans) {
             for (int i = 1; i <= groupSizes.getDimension(); i++) {
-            	out.print("ibspMeanPopSizes." + i+ "\t");
+            	out.print("MeanPopSizes." + i+ "\t");
             }
         }
 
@@ -393,6 +413,11 @@ public class BICEPS extends TreeDistribution {
     protected boolean requiresRecalculation() {
         m_bIsPrepared = false;
         return true;
+    }
+    
+    @Override
+    public boolean canHandleTipDates() {
+    	return true;
     }
 
 }
