@@ -1,0 +1,88 @@
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+
+ <!-- tree priors -->
+    <mergewith point='treePriorTemplates'>
+
+        <!-- Yule/Pure birth for Bayesian skyline -->
+        <subtemplate id='YuleSkyline' class='biceps.YuleSkyline'
+                     mainid='YuleSkyline.t:$(n)'
+                     suppressInputs='biceps.YuleSkyline.tree,
+                     biceps.YuleSkyline.treeIntervals,
+                     biceps.YuleSkyline.groupSizes'>
+            <![CDATA[
+            <distribution spec="biceps.YuleSkyline" id='YuleSkyline.t:$(n)'
+                birthRateShape="2.0"
+                linkedMean="true" logMeans="false"
+               >
+                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10">1</groupSizes>
+                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
+                <treeIntervals spec='TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
+            </distribution>
+
+             <prior id="YuleSkylineBirthRateRatePrior.t:$(n)" name="distribution" x="@YuleSkylineBirthRateRate.t:$(n)">
+                <LogNormal meanInRealSpace="true" name="distr" M="1" S="1"/>
+            </prior>
+
+
+		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
+
+	    	<operator id="YuleSkylineEpochTop.t:$(n)" spec="biceps.operators.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
+	    	<operator id="YuleSkylineEpochAll.t:$(n)" spec="biceps.operators.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
+    		<operator id="YuleSkylineTreeFlex.t:$(n)" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="2.0"/>
+    <!--
+		    <operator id="YuleSkylineTreeFlexUpDown.t:$(n)" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" meanRate="@strict.clock" weight="2.0"/>
+   -->
+
+
+            <operator id='YuleSkylineTreeRootScaler.t:$(n)' spec='beast.evolution.operators.BactrianScaleOperator' scaleFactor="0.1" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
+            <operator id='YuleSkylineUniformOperator.t:$(n)' spec='beast.evolution.operators.BactrianNodeOperator' weight="30" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineSubtreeSlide.t:$(n)' spec='beast.evolution.operators.BactrianSubtreeSlide' weight="15" size="1.0" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineNarrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
+
+]]>
+            <connect srcID='YuleSkyline.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with Integrated Bayesian epoch prior for tree t:$(n)
+            </connect>
+
+            <connect srcID='YuleSkylineBirthRateRatePrior.t:$(n)' targetID='prior' inputName='distribution' 
+            		if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
+
+            <connect srcID='YuleSkylineBirthRateRate.t:$(n)' targetID='state' inputName='stateNode'
+            		if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
+
+            <connect srcID='YuleSkylineEpochTop.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='YuleSkylineEpochAll.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='YuleSkylineTreeFlex.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <!--
+            <connect srcID='YuleSkylineTreeFlexUpDown.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            -->
+
+            <connect srcID='YuleSkylineTreeRootScaler.t:$(n)'            targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
+            <connect srcID='YuleSkylineUniformOperator.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+            <connect srcID='YuleSkylineSubtreeSlide.t:$(n)'              targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+            <connect srcID='YuleSkylineNarrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
+            <connect srcID='YuleSkylineWide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
+            <connect srcID='YuleSkylineWilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
+
+
+            <connect srcID='YuleSkylineBirthRateRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
+            		if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'>Scale rate of Yule prior of tree t:$(n)
+            </connect>
+
+            <connect srcID='YuleSkyline.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(YuleSkyline.t:$(n))'/>
+            <connect srcID='YuleSkylineBirthRateRate.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
+
+        </subtemplate>
+
+
+
+    </mergewith>
+</beast>
+
+
