@@ -35,8 +35,8 @@ import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
-@Description("Visualises tree operators")
-public class TreeOperatorViewer extends JPanel implements BEASTInterface {
+@Description("Visualises epoch flex operator")
+public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {
 	private static final long serialVersionUID = 1L;
 
 	static int N = 8; // number of sliders
@@ -55,10 +55,10 @@ public class TreeOperatorViewer extends JPanel implements BEASTInterface {
 	JButton screenShotButton;
 	int screenShotCount = 0;
 	
-	public TreeOperatorViewer() {	
+	public EpochFlexOperatorViewer() {	
 	}
 	
-	public TreeOperatorViewer(String startValues) {
+	public EpochFlexOperatorViewer(String startValues) {
 		initialise(startValues);
 		
 		animationState = new int[N];
@@ -830,7 +830,7 @@ public class TreeOperatorViewer extends JPanel implements BEASTInterface {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
 		frame.setSize(1024, 768);
-		TreeOperatorViewer viewer = new TreeOperatorViewer(args.length > 0 ? args[0] : null);
+		EpochFlexOperatorViewer viewer = new EpochFlexOperatorViewer(args.length > 0 ? args[0] : null);
 		frame.add(viewer);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

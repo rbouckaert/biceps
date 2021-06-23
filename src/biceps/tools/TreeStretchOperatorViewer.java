@@ -13,7 +13,7 @@ import javax.swing.event.ChangeListener;
 
 import beast.evolution.tree.Node;
 
-public class TreeStretchOperatorViewer extends TreeOperatorViewer {
+public class TreeStretchOperatorViewer extends EpochFlexOperatorViewer {
 	private static final long serialVersionUID = 1L;
 
 	public TreeStretchOperatorViewer() {	
