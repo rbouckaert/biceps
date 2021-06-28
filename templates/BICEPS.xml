@@ -19,7 +19,7 @@
                >
                 <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10">1</groupSizes>
                 <populationMean id="BICEPSPopSize.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
-                <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
+                <treeIntervals spec='TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
              <prior id="BICEPSPopSizePrior.t:$(n)" name="distribution" x="@BICEPSPopSize.t:$(n)">

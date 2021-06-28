@@ -132,7 +132,7 @@
 		</jar>
 		<jar jarfile="${distBICEPS}/BICEPS.src.jar">
 			<fileset dir="${srcBICEPS}">
-				<include name="beast/**/*.java" />
+				<include name="**/*.java" />
 				<include name="beast/**/*.png" />
 				<include name="beast/**/*.xsl" />
 			</fileset>
@@ -143,6 +143,7 @@
 			</manifest>
 			<fileset dir="${buildBICEPS}">
 				<include name="beast/**/*.png" />
+				<exclude name="biceps/tools/*.class"/>
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 			</fileset>
@@ -204,7 +205,8 @@
 			<fileset file="version.xml"/>
 		</copy>
 		<copy todir="${Add_on_dir}/examples">
-			<fileset dir="examples" />
+			<fileset file="examples/hcv_biceps.xml" />
+			<fileset file="examples/hcv_yule_skyline.xml" />
 		</copy>
 <!--
 		<copy todir="${Add_on_dir}/doc">
@@ -219,6 +221,7 @@
 		</copy>
 		<copy todir="${Add_on_dir}/templates">
 			<fileset file="templates/BICEPS.xml" />
+			<fileset file="templates/YuleSkyline.xml" />
 		</copy>
 
 		<jar jarfile="${distBICEPS}/BICEPS.addon.v${BICEPSversion}.zip">

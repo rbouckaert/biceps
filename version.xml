@@ -4,7 +4,7 @@
 
 			<map from="IBSP" to="biceps.BICEPS"/>
 			<map from="tsi.evolution.operators.EpochOperator" to="biceps.operators.EpochFlexOperator"/>
-			<map from="tsi.evolution.operators.SkewedScaleOperator" to="biceps.operators.TreeStrechOperator"/>
+			<map from="tsi.evolution.operators.SkewedScaleOperator" to="biceps.operators.TreeStretchOperator"/>
 
 
 </package>
