@@ -37,6 +37,7 @@
 		<fileset dir="${libBeast2}" includes="colt.jar"/>
 		<fileset dir="${libBeast2}" includes="antlr-runtime-4.7.jar"/>
 		<fileset dir="${libBeast2}" includes="beagle.jar"/>
+		<fileset dir="../Babel/lib" includes="itextpdf-5.5.9.jar"/>
         <pathelement path="${beast2classpath}"/>
         <pathelement path="${BEASTLabsclasspath}"/>
         <pathelement path="${BICEPSclasspath}"/>        

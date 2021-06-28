@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,11 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.itextpdf.awt.PdfGraphics2D;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Input;
@@ -39,7 +45,7 @@ import beast.util.Randomizer;
 public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {
 	private static final long serialVersionUID = 1L;
 
-	static int N = 8; // number of sliders
+	static int N = 6; // number of sliders
 	JPanel treePanel;
 	ControlPanel controlPanel;
 	OperatorPanel operatorPanel;
@@ -497,6 +503,16 @@ public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {
 			add(operatorPanel);
 
 			add(new JSeparator(JSeparator.HORIZONTAL));
+			
+			exportPDF = new JButton("To pdf");
+			exportPDF.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					File file = Utils.getSaveFile("Export PDF to...");
+					exportPDF(file.getPath());
+				}
+			});
+			add(exportPDF);
 
 			progress = new JSlider(0, 1000, 1000);
 			progress.addChangeListener(new ChangeListener() {				
@@ -508,6 +524,8 @@ public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {
 			});
 			add(progress);
 		}
+		
+		JButton exportPDF;
 		
 		private void processProgress() {
 			int p = progress.getValue();
@@ -827,6 +845,31 @@ public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {
 	}
 
 	
+	protected void exportPDF(String sFileName) {
+		try {
+			com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
+			PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(sFileName));
+			doc.setPageSize(new com.itextpdf.text.Rectangle(treePanel.getWidth(), treePanel.getHeight()));
+			doc.open();
+			PdfContentByte cb = writer.getDirectContent();
+			Graphics2D g = new PdfGraphics2D(cb, treePanel.getWidth(), treePanel.getHeight());
+			 
+			//BufferedImage bi;
+			//bi = new BufferedImage(m_Panel.getWidth(), m_Panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+			//g = bi.getGraphics();
+			g.setPaintMode();
+			g.setColor(getBackground());
+			g.fillRect(0, 0, treePanel.getWidth(), treePanel.getHeight());
+			treePanel.paint(g);
+			//m_Panel.printAll(g);
+		
+			g.dispose();
+			doc.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(treePanel, "Export may have failed: " + e.getMessage());
+		}
+	}
+
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
 		frame.setSize(1024, 768);

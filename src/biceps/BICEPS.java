@@ -72,7 +72,7 @@ public class BICEPS extends EpochTreeDistribution {
         List<Integer> lineageCounts = new ArrayList<>();
         List<Double> intervalSizes = new ArrayList<>();
         
-        for (int j = 0; j < intervals.getIntervalCount(); j++) {
+        for (int j = 0; groupIndex < groupSizes.length && j < intervals.getIntervalCount(); j++) {
             lineageCounts.add(intervals.getLineageCount(j));
             intervalSizes.add(intervals.getInterval(j));
             if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
@@ -166,7 +166,7 @@ public class BICEPS extends EpochTreeDistribution {
         double [] popSizes = new double[groupSizes.length];
     	double [] meanPopSizes = new double[groupSizes.length];
 
-        for (int j = 0; j < intervals.getIntervalCount(); j++) {
+        for (int j = 0; groupIndex < groupSizes.length && j < intervals.getIntervalCount(); j++) {
             lineageCounts.add(intervals.getLineageCount(j));
             intervalSizes.add(intervals.getInterval(j));
             if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
