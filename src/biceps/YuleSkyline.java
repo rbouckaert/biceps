@@ -2,6 +2,7 @@ package biceps;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -11,6 +12,8 @@ import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.TreeInterface;
 import beast.evolution.tree.coalescent.IntervalType;
 
 @Description("Skyline version of Yule tree prior that integrates out birth rate parameters"
@@ -46,6 +49,67 @@ public class YuleSkyline extends EpochTreeDistribution {
     
 	@Override
 	public double calculateLogP() {
+    	if (!useEqualEpochs) {
+    		logP = calculateLogPbyIntervals();
+    	} else {
+    		logP = calculateLogPbyEqualEpochs();
+    	}
+    	return logP;
+	}
+	
+	private double calculateLogPbyEqualEpochs() {
+		Arrays.fill(lengths, 0.0);
+		Arrays.fill(eventCounts, 0);
+		TreeInterface tree = treeInput.get();
+		double rootHeight = tree.getRoot().getHeight();
+
+		for (Node node : tree.getInternalNodes()) {
+			eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
+			for (Node child : node.getChildren()) {
+				addLengths(child, rootHeight / groupCount);
+			}
+		}
+		
+		logP = 0;
+		for (int k = 0; k < groupCount; k++) {
+	        double logGammaRatio = 0.0;
+	        for (int i = 0; i < eventCounts[k]; i++) {
+	            logGammaRatio += Math.log(alpha + i);
+	        }
+	        
+	        double L = lengths[k];
+	        prevMean = (alpha + eventCounts[k])/(beta + L);
+
+	        logP += 
+	        		+ alpha * Math.log(beta) 
+	        		- Math.log(alpha)
+	        		+ logGammaRatio 
+	        		- (alpha + eventCounts[k]) * Math.log(beta + L);
+		}
+		return logP;		
+	}
+	
+	/** update 'lengths' array with length of branch above child **/
+	private void addLengths(Node child, double delta) {
+		double from = child.getHeight();
+		double to = child.getParent().getHeight();
+		int start = (int) (from / delta);
+		int end = (int) (to / delta);
+		if (start == end) {
+			// branch is inside a single epochs
+			lengths[start] += to-from;
+			return;
+		}
+		
+		// branch stretches over multiple epochs
+		lengths[start] += delta * (start+1) - from;
+		for (int i = start + 1; i < end; i++) {
+			lengths[i] += delta;
+		}
+		lengths[end] += to - delta * end;
+	}
+
+	private double calculateLogPbyIntervals() {
         if (!isPrepared) {
             prepare();
         }

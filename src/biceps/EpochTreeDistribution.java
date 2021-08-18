@@ -17,13 +17,23 @@ public class EpochTreeDistribution extends TreeDistribution {
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", false);
     final public Input<Boolean> logMeansInput = new Input<>("logMeans", "log mean population size estimates for each epoch", false);
+    final public Input<Boolean> useEqualEpochsInput = new Input<>("useEqualEpochs", "if useEqualEpochs is false, use epochs based on groups from tree intervals, n"
+    		+ "otherwise use equal sized epochs that scale with the tree height", false);
 
     protected IntegerParameter groupSizes;
     protected TreeIntervals intervals;
     protected boolean isPrepared = false, linkedMean = false, logMeans = false;
     protected double prevMean;
     
+    /** actual number of groups in use **/
+    protected int groupCount;
+
     protected MyRandomizer myRandomizer = new MyRandomizer();
+    /** if useEqualEpochs is false, use epochs based on groups from tree intervals, 
+     * otherwise use equal sized epochs that scale with the tree height **/
+    protected boolean useEqualEpochs = false;
+    protected double [] lengths;
+    protected int [] eventCounts;
 
     @Override
     public void initAndValidate() {
@@ -31,13 +41,39 @@ public class EpochTreeDistribution extends TreeDistribution {
     	linkedMean = linkedMeanInput.get();
     	logMeans = logMeansInput.get();
 
-    	if (treeInput.get() != null) {
-            throw new IllegalArgumentException("only tree intervals (not tree) should not be specified");
+		useEqualEpochs = useEqualEpochsInput.get();
+    	if (!useEqualEpochs && treeInput.get() != null) {
+            throw new IllegalArgumentException("only tree intervals (not tree) should not be specified when not using equal intervals");
+        } else if (useEqualEpochs && treeIntervalsInput.get() != null) {
+             throw new IllegalArgumentException("only tree (not tree intervals) should not be specified when  using equal intervals");
         }
-        intervals = treeIntervalsInput.get();
         
-        
-        int groupCount = groupCountInput.get();
+    	if (!useEqualEpochs) {
+    		setUpIntervals();
+    	} else {
+    		setUpEqualIntervals();
+    	}
+    }
+    
+    
+    private void setUpEqualIntervals() {
+        groupCount = groupCountInput.get();
+        if (groupCount <= 0) {
+        	groupCount = 10;
+        	int n = treeInput.get().getInternalNodeCount();
+        	if (n/10 > 30) {
+        		groupCount = n/30;
+        	} else if (n/10 < 6) {
+        		groupCount = n/6;
+        	}
+        }
+        lengths = new double[groupCount];
+        eventCounts = new int[groupCount];
+    }
+    
+    private void setUpIntervals() {
+    	intervals = treeIntervalsInput.get();
+        groupCount = groupCountInput.get();
         if (groupCount <= 0) {
         	groupCount = 10;
         	int n = intervals.treeInput.get().getInternalNodeCount();

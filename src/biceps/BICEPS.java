@@ -55,6 +55,20 @@ public class BICEPS extends EpochTreeDistribution {
     
 	@Override
 	public double calculateLogP() {
+		
+    	if (!useEqualEpochs) {
+    		logP = calculateLogPbyIntervals();
+    	} else {
+    		logP = calculateLogPbyEqualEpochs();
+    	}
+    	return logP;
+	}
+	
+	private double calculateLogPbyEqualEpochs() {
+		throw new RuntimeException("Equal sized epochs are not implemented yet for " + getClass().getName());
+	}
+	
+	private double calculateLogPbyIntervals() {
         if (!isPrepared) {
             prepare();
         }

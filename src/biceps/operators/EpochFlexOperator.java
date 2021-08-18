@@ -111,7 +111,38 @@ public class EpochFlexOperator extends Operator {
 				node.setHeight(h);
 			}
 		}
-
+		
+		if (scaled < 2) {
+			// let L = intervalLow, U = intervalHi, s = scale
+			// with 2 nodes between L and U and one node above U, L, U and s are uniquely determined
+//			Given two nodes at height h1, h2 between U and L, then
+//
+//			h1' = L + s * (h1-L)
+//			h2' = L + s * (h2-L)
+//
+//			Subtract second form first:
+//
+//			h1’-h2’ = s * (h1-h2) so s =  (h1’-h2’)/(h1-h2). Fill s in first equation gives L.
+//
+//			Given two more nodes above U at heights h3, h4
+//
+//			h3’ = h3 + delta
+//
+//			so delta = h3’ - h3
+//
+//			delta = U’ - U where U’ = L + s * (U-L) so
+//			delta = L + s * (U-L) - U =>
+//			delta = (1+s)L + (s-1)U
+//			U = (delta - (1+s)L)/(s-1)
+//
+//			All are unique, so it takes just 2 nodes between U and L (assuming U < root height) to guarantee unique U, L and s.
+			
+			// with 1 node between L and U, 
+			// there are multiple L,U and s values resulting in the same proposal
+			// and we cannot guarantee HR is correct
+			return Double.NEGATIVE_INFINITY;
+		}
+		
 		for (Node node0 : nodes) {
 			if (node0.getLength() < 0) {
 				return Double.NEGATIVE_INFINITY;
