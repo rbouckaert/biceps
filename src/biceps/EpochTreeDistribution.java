@@ -17,7 +17,7 @@ public class EpochTreeDistribution extends TreeDistribution {
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", false);
     final public Input<Boolean> logMeansInput = new Input<>("logMeans", "log mean population size estimates for each epoch", false);
-    final public Input<Boolean> useEqualEpochsInput = new Input<>("useEqualEpochs", "if useEqualEpochs is false, use epochs based on groups from tree intervals, n"
+    final public Input<Boolean> useEqualEpochsInput = new Input<>("equalEpochs", "if useEqualEpochs is false, use epochs based on groups from tree intervals, n"
     		+ "otherwise use equal sized epochs that scale with the tree height", false);
 
     protected IntegerParameter groupSizes;

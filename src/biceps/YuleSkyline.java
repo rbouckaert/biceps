@@ -38,7 +38,9 @@ public class YuleSkyline extends EpochTreeDistribution {
     	birthRateShape = birthRateShapeInput.get();
     	birthRateRate = birthRateRateInput.get();
 
-        prepare();
+    	if (!useEqualEpochs) {
+    		prepare();
+    	}
     }
 
 
@@ -61,7 +63,8 @@ public class YuleSkyline extends EpochTreeDistribution {
 		Arrays.fill(lengths, 0.0);
 		Arrays.fill(eventCounts, 0);
 		TreeInterface tree = treeInput.get();
-		double rootHeight = tree.getRoot().getHeight();
+		// add epsilon=1e-10 so root falls in highest numbered epoch
+		double rootHeight = tree.getRoot().getHeight() + 1e-10;
 
 		for (Node node : tree.getInternalNodes()) {
 			eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
@@ -71,7 +74,10 @@ public class YuleSkyline extends EpochTreeDistribution {
 		}
 		
 		logP = 0;
-		for (int k = 0; k < groupCount; k++) {
+        alpha = birthRateShape.getValue();
+        beta = birthRateRate.getValue();
+		// walk the intervals from root to tips
+		for (int k = groupCount-1; k >= 0; k--) {
 	        double logGammaRatio = 0.0;
 	        for (int i = 0; i < eventCounts[k]; i++) {
 	            logGammaRatio += Math.log(alpha + i);
@@ -85,6 +91,9 @@ public class YuleSkyline extends EpochTreeDistribution {
 	        		- Math.log(alpha)
 	        		+ logGammaRatio 
 	        		- (alpha + eventCounts[k]) * Math.log(beta + L);
+        	if (linkedMean) {
+        		beta = alpha/prevMean;
+        	}
 		}
 		return logP;		
 	}
@@ -191,14 +200,17 @@ public class YuleSkyline extends EpochTreeDistribution {
 	@Override
 	public void init(PrintStream out) {
 		super.init(out);
-        for (int i = 1; i <= groupSizes.getDimension(); i++) {
+		
+        for (int i = 1; i <= groupCount; i++) {
         	out.print("BirthRates." + i+ "\t");
         }
-        for (int i = 1; i <= groupSizes.getDimension(); i++) {
-        	out.print("GroupSizes." + i+ "\t");
-        }
+		if (!useEqualEpochs) {
+	        for (int i = 1; i <= groupCount; i++) {
+	        	out.print("GroupSizes." + i+ "\t");
+	        }
+		}
         if (logMeans) {
-            for (int i = 1; i <= groupSizes.getDimension(); i++) {
+            for (int i = 1; i <= groupCount; i++) {
             	out.print("MeanBirthRates." + i+ "\t");
             }
         }
@@ -207,51 +219,86 @@ public class YuleSkyline extends EpochTreeDistribution {
 	
 	@Override
 	public void log(long sampleNr, PrintStream out) {
-        if (!isPrepared) {
-            prepare();
-        }
-        
-        alpha = birthRateShape.getValue();
-        beta = birthRateRate.getValue();
-
-        int groupIndex = 0;
-        Integer [] groupSizes = this.groupSizes.getValues();
-        int subIndex = 0;
-
-        List<Integer> lineageCounts = new ArrayList<>();
-        List<Double> intervalSizes = new ArrayList<>();
-        double [] birthRates = new double[groupSizes.length];
-    	double [] meanBirthRates = new double[groupSizes.length];
-
-        for (int j = intervals.getIntervalCount()-1; j >= 0 && groupIndex < groupSizes.length; j--) {
-            lineageCounts.add(intervals.getLineageCount(j));
-            intervalSizes.add(intervals.getInterval(j));
-            if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
-                subIndex += 1;
-            }
-            if (subIndex >= groupSizes[groupIndex]) {
-            	
-            	birthRates[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
-            	meanBirthRates[groupIndex] = groupIndex == 0 || !linkedMean ? birthRateShape.getValue()/birthRateRate.getValue() : prevMean;
-            	if (linkedMean) {
-            		beta = alpha/prevMean;
-            	}
-            	
-                groupIndex += 1;
-                subIndex = 0;
-                lineageCounts.clear();
-                intervalSizes.clear();
-            }
-        }
-        
-        
         super.log(sampleNr, out);
-        for (double d : birthRates) {
+        
+        double [] birthRates = new double[groupCount];
+    	double [] meanBirthRates = new double[groupCount];
+
+		if (useEqualEpochs) {
+			Arrays.fill(lengths, 0.0);
+			Arrays.fill(eventCounts, 0);
+			TreeInterface tree = treeInput.get();
+			// add epsilon=1e-10 so root falls in highest numbered epoch
+			double rootHeight = tree.getRoot().getHeight() + 1e-10;
+
+			for (Node node : tree.getInternalNodes()) {
+				eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
+				for (Node child : node.getChildren()) {
+					addLengths(child, rootHeight / groupCount);
+				}
+			}
+			
+	        alpha = birthRateShape.getValue();
+	        beta = birthRateRate.getValue();
+			// walk the intervals from root to tips
+			for (int k = groupCount-1; k >= 0; k--) {
+		        prevMean = (alpha + eventCounts[k])/(beta + lengths[k]);
+		        
+		        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts[k], 1.0/(beta + lengths[k]), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+		        birthRates[k] = g.sample();
+		        meanBirthRates[k] = k == groupCount-1 ? birthRateShape.getValue()/birthRateRate.getValue() : prevMean;
+
+	        	if (linkedMean) {
+	        		beta = alpha/prevMean;
+	        	}
+			}
+
+		} else  {
+	        if (!isPrepared) {
+	            prepare();
+	        }
+	        
+	        alpha = birthRateShape.getValue();
+	        beta = birthRateRate.getValue();
+	
+	        int groupIndex = 0;
+	        Integer [] groupSizes = this.groupSizes.getValues();
+	        int subIndex = 0;
+	
+	        List<Integer> lineageCounts = new ArrayList<>();
+	        List<Double> intervalSizes = new ArrayList<>();
+	
+	        for (int j = intervals.getIntervalCount()-1; j >= 0 && groupIndex < groupSizes.length; j--) {
+	            lineageCounts.add(intervals.getLineageCount(j));
+	            intervalSizes.add(intervals.getInterval(j));
+	            if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
+	                subIndex += 1;
+	            }
+	            if (subIndex >= groupSizes[groupIndex]) {
+	            	
+	            	birthRates[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
+	            	meanBirthRates[groupIndex] = groupIndex == 0 || !linkedMean ? birthRateShape.getValue()/birthRateRate.getValue() : prevMean;
+	            	if (linkedMean) {
+	            		beta = alpha/prevMean;
+	            	}
+	            	
+	                groupIndex += 1;
+	                subIndex = 0;
+	                lineageCounts.clear();
+	                intervalSizes.clear();
+	            }
+	        }
+	        
+		}
+
+		for (double d : birthRates) {
         	out.print(d + "\t");
         }
-        for (int i : groupSizes) {
-        	out.print(i + "\t");
-        }
+		if (!useEqualEpochs) {
+	        for (int i : this.groupSizes.getValues()) {
+	        	out.print(i + "\t");
+	        }
+		}
         if (logMeans) {
             for (double d : meanBirthRates) {
             	out.print(d + "\t");
