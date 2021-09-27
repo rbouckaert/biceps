@@ -9,15 +9,14 @@
         <subtemplate id='BICEPS' class='biceps.BICEPS'
                      mainid='BICEPS.t:$(n)'
                      suppressInputs='biceps.BICEPS.tree,
-                     biceps.BICEPS.treeIntervals,
-                     biceps.BICEPS.groupSizes'>
+                     biceps.BICEPS.treeIntervals'>
             <![CDATA[
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"
                 ploidy="1.0"
                 linkedMean="true" logMeans="false"
                >
-                <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10">1</groupSizes>
+                <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
                 <populationMean id="BICEPSPopSize.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
                 <treeIntervals spec='TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
@@ -44,6 +43,8 @@
             <operator id='BICEPSWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
             <operator id='BICEPSWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
+			<operator id='BICEPSGroupSizesDelta.t:$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
+                              intparameter="@BICEPSGroupSizes.t:$(n)"/>
 ]]>
             <connect srcID='BICEPS.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with Integrated Bayesian epoch prior for tree t:$(n)
@@ -52,8 +53,10 @@
             <connect srcID='BICEPSPopSizePrior.t:$(n)' targetID='prior' inputName='distribution' 
             		if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'/>
 
-            <connect srcID='BICEPSPopSize.t:$(n)' targetID='state' inputName='stateNode'
-            		if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'/>
+            <connect srcID='BICEPSPopSize.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'/>
+			<connect srcID='BICEPSGroupSizes.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true'/>
+
+
 
             <connect srcID='BICEPSEpochTop.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
             <connect srcID='BICEPSEpochAll.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
@@ -68,7 +71,7 @@
             <connect srcID='BICEPSNarrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='BICEPSWide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='BICEPSWilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
-
+            <connect srcID='BICEPSGroupSizesDelta.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true'>Propose group sizes for BICEPS prior on tree t:$(n)</connect>
 
             <connect srcID='BICEPSPopSizesScaler.t:$(n)' targetID='mcmc' inputName='operator'
             		if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'>Scale population size of Coalscent prior of tree t:$(n)

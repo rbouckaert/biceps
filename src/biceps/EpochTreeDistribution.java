@@ -9,7 +9,10 @@ import beast.util.Randomizer;
 
 @Description("Base class for epoch-based tree distributions like BICEPS and YuleSkyline")
 public class EpochTreeDistribution extends TreeDistribution {
-    final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes", "the group sizes parameter. If not specified, a fixed set of group sizes determined by the groupCount input will be used");
+    final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes", 
+    		"the group sizes parameter. "
+    		+ "If not estimated (estimate=false on this parameter), fixed group sizes will be used, otherwise they will be estimated."
+    		+ "If not specified, a fixed set of group sizes determined by the groupCount input will be used.");
     final public Input<Integer> groupCountInput = new Input<>("groupCount", "the number of groups used, which determines the dimension of the groupSizes parameter. "
     		+ "If less than zero (default) 10 groups will be used, "
     		+ "unless group sizes are larger than 30 (then group count = number of taxa/30) or "

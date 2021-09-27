@@ -9,14 +9,13 @@
         <subtemplate id='YuleSkyline' class='biceps.YuleSkyline'
                      mainid='YuleSkyline.t:$(n)'
                      suppressInputs='biceps.YuleSkyline.tree,
-                     biceps.YuleSkyline.treeIntervals,
-                     biceps.YuleSkyline.groupSizes'>
+                     biceps.YuleSkyline.treeIntervals'>
             <![CDATA[
             <distribution spec="biceps.YuleSkyline" id='YuleSkyline.t:$(n)'
                 birthRateShape="2.0"
                 linkedMean="true" logMeans="false"
                >
-                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10">1</groupSizes>
+                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
                 <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
                 <treeIntervals spec='TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
@@ -43,6 +42,8 @@
             <operator id='YuleSkylineWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
             <operator id='YuleSkylineWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
+			<operator id='YuleSkylineGroupSizesDelta.t:$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
+                              intparameter="@YuleSkylineGroupSizes.t:$(n)"/>
 ]]>
             <connect srcID='YuleSkyline.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with Integrated Bayesian epoch prior for tree t:$(n)
@@ -51,8 +52,8 @@
             <connect srcID='YuleSkylineBirthRateRatePrior.t:$(n)' targetID='prior' inputName='distribution' 
             		if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
 
-            <connect srcID='YuleSkylineBirthRateRate.t:$(n)' targetID='state' inputName='stateNode'
-            		if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
+            <connect srcID='YuleSkylineBirthRateRate.t:$(n)'           targetID='state' inputName='stateNode' if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineBirthRateRate.t:$(n)/estimate=true'/>
+			<connect srcID='YuleSkylineGroupSizes.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineGroupSizes.t:$(n)/estimate=true'/>
 
             <connect srcID='YuleSkylineEpochTop.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
             <connect srcID='YuleSkylineEpochAll.t:$(n)'                targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
@@ -67,6 +68,7 @@
             <connect srcID='YuleSkylineNarrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='YuleSkylineWide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='YuleSkylineWilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
+            <connect srcID='YuleSkylineGroupSizesDelta.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(YuleSkyline.t:$(n)) and YuleSkylineGroupSizes.t:$(n)/estimate=true'>Propose group sizes for Yule skyline prior on tree t:$(n)</connect>
 
 
             <connect srcID='YuleSkylineBirthRateRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
