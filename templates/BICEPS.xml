@@ -14,7 +14,9 @@
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"
                 ploidy="1.0"
-                linkedMean="true" logMeans="false"
+                linkedMean="true" 
+                logMeans="false"
+                equalEpochs="false"
                >
                 <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
                 <populationMean id="BICEPSPopSize.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
@@ -54,7 +56,7 @@
             		if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'/>
 
             <connect srcID='BICEPSPopSize.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'/>
-			<connect srcID='BICEPSGroupSizes.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true'/>
+			<connect srcID='BICEPSGroupSizes.t:$(n)'              targetID='state' inputName='stateNode' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true and BICEPS.t:$(n)/equalEpochs=false'/>
 
 
 
@@ -71,7 +73,7 @@
             <connect srcID='BICEPSNarrow.t:$(n)'                    targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Narrow exchange performs local rearrangement of tree t:$(n)</connect>
             <connect srcID='BICEPSWide.t:$(n)'                      targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Wide exchange performs global rearrangement of tree t:$(n)</connect>
             <connect srcID='BICEPSWilsonBalding.t:$(n)'             targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Performs Wilson-Balding global rearrangement of tree t:$(n)</connect>
-            <connect srcID='BICEPSGroupSizesDelta.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true'>Propose group sizes for BICEPS prior on tree t:$(n)</connect>
+            <connect srcID='BICEPSGroupSizesDelta.t:$(n)'           targetID='mcmc' inputName='operator' if='inposterior(BICEPS.t:$(n)) and BICEPSGroupSizes.t:$(n)/estimate=true and BICEPS.t:$(n)/equalEpochs=false'>Propose group sizes for BICEPS prior on tree t:$(n)</connect>
 
             <connect srcID='BICEPSPopSizesScaler.t:$(n)' targetID='mcmc' inputName='operator'
             		if='inposterior(BICEPS.t:$(n)) and BICEPSPopSize.t:$(n)/estimate=true'>Scale population size of Coalscent prior of tree t:$(n)

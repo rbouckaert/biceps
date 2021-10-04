@@ -63,6 +63,9 @@ public class YuleSkyline extends EpochTreeDistribution {
 		Arrays.fill(lengths, 0.0);
 		Arrays.fill(eventCounts, 0);
 		TreeInterface tree = treeInput.get();
+		if (tree == null) {
+			tree = treeIntervalsInput.get().treeInput.get();
+		}
 		// add epsilon=1e-10 so root falls in highest numbered epoch
 		double rootHeight = tree.getRoot().getHeight() + 1e-10;
 
@@ -228,6 +231,9 @@ public class YuleSkyline extends EpochTreeDistribution {
 			Arrays.fill(lengths, 0.0);
 			Arrays.fill(eventCounts, 0);
 			TreeInterface tree = treeInput.get();
+			if (tree == null) {
+				tree = treeIntervalsInput.get().treeInput.get();
+			}
 			// add epsilon=1e-10 so root falls in highest numbered epoch
 			double rootHeight = tree.getRoot().getHeight() + 1e-10;
 

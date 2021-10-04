@@ -2,6 +2,7 @@ package biceps;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -10,6 +11,8 @@ import beast.app.beauti.Beauti;
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.TreeInterface;
 import beast.evolution.tree.coalescent.IntervalType;
 
 @Description("Bayesian Integrated Coalescent Epoch PlotS: "
@@ -45,7 +48,9 @@ public class BICEPS extends EpochTreeDistribution {
     	}			
 
 
-        prepare();
+    	if (!useEqualEpochs) {
+    		prepare();
+    	}
     }
 
 
@@ -65,11 +70,59 @@ public class BICEPS extends EpochTreeDistribution {
 	}
 	
 	private double calculateLogPbyEqualEpochs() {
-		throw new RuntimeException("Equal sized epochs are not implemented yet for " + getClass().getName());
+		Arrays.fill(lengths, 0.0);
+		Arrays.fill(eventCounts, 0);
+		TreeInterface tree = treeInput.get();
+		if (tree == null) {
+			tree = treeIntervalsInput.get().treeInput.get();
+		}
+		// add epsilon=1e-10 so root falls in highest numbered epoch
+		double rootHeight = tree.getRoot().getHeight() + 1e-10;
+		double interval = rootHeight / groupCount;
+		
+		alpha = populationShape.getValue();
+        beta = populationMean.getValue() * (alpha - 1.0);
+
+        logP = 0.0;
+
+        int groupIndex = 0;
+        Integer [] groupSizes = this.groupSizes.getValues();
+
+        List<Integer> lineageCounts = new ArrayList<>();
+        List<Double> intervalSizes = new ArrayList<>();
+        
+        
+        double currentThreshold = interval;
+        double prevThreshold = 0;
+        for (int j = 0; groupIndex < groupCount && j < intervals.getIntervalCount(); j++) {
+        	if (intervals.getIntervalTime(j) < currentThreshold && j < intervals.getIntervalCount()) {
+        		if (j > 0 && intervalSizes.size() == 0) {
+            		intervalSizes.add(intervals.getIntervalTime(j) - prevThreshold);        		
+        		} else {
+        			intervalSizes.add(intervals.getInterval(j));
+        		}
+    			lineageCounts.add(intervals.getLineageCount(j));
+        	}
+        	if (intervals.getIntervalTime(j) >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
+        		lineageCounts.add(j > 0 ? intervals.getLineageCount(j-1) : 1);
+        		intervalSizes.add(currentThreshold - (j > 0 ? intervals.getIntervalTime(j-1) : 0.0));        		
+        		
+            	logP += analyticalLogP(lineageCounts, groupSizes[groupIndex], intervalSizes);
+            	if (linkedMean) {
+            		beta = prevMean * (alpha - 1.0);
+            	}
+                groupIndex += 1;
+                lineageCounts.clear();
+                intervalSizes.clear();
+                prevThreshold = currentThreshold;
+                currentThreshold += interval;
+            }
+        }
+        return logP;
 	}
 	
 	private double calculateLogPbyIntervals() {
-        if (!isPrepared) {
+        if (!isPrepared && !useEqualEpochs) {
             prepare();
         }
 
@@ -151,8 +204,14 @@ public class BICEPS extends EpochTreeDistribution {
         for (int i = 1; i <= groupSizes.getDimension(); i++) {
         	out.print("PopSizes." + i+ "\t");
         }
-        for (int i = 1; i <= groupSizes.getDimension(); i++) {
-        	out.print("GroupSizes." + i+ "\t");
+        if (!useEqualEpochs) {
+        	for (int i = 1; i <= groupSizes.getDimension(); i++) {
+        		out.print("GroupSizes." + i+ "\t");
+        	}
+        } else {
+        	for (int i = 1; i <= groupSizes.getDimension(); i++) {
+        		out.print("IntervalSizes." + i+ "\t");
+        	}
         }
         if (logMeans) {
             for (int i = 1; i <= groupSizes.getDimension(); i++) {
@@ -164,7 +223,7 @@ public class BICEPS extends EpochTreeDistribution {
 	
 	@Override
 	public void log(long sampleNr, PrintStream out) {
-        if (!isPrepared) {
+        if (!isPrepared && !useEqualEpochs) {
             prepare();
         }
         
@@ -180,34 +239,85 @@ public class BICEPS extends EpochTreeDistribution {
         double [] popSizes = new double[groupSizes.length];
     	double [] meanPopSizes = new double[groupSizes.length];
 
-        for (int j = 0; groupIndex < groupSizes.length && j < intervals.getIntervalCount(); j++) {
-            lineageCounts.add(intervals.getLineageCount(j));
-            intervalSizes.add(intervals.getInterval(j));
-            if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
-                subIndex += 1;
-            }
-            if (subIndex >= groupSizes[groupIndex]) {
-            	
-            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
-            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
-            	if (linkedMean) {
-            		beta = prevMean * (alpha - 1.0);
-            	}
-            	
-                groupIndex += 1;
-                subIndex = 0;
-                lineageCounts.clear();
-                intervalSizes.clear();
-            }
-        }
-        
-        
         super.log(sampleNr, out);
-        for (double d : popSizes) {
-        	out.print(d + "\t");
-        }
-        for (int i : groupSizes) {
-        	out.print(i + "\t");
+        
+        if (!useEqualEpochs) {
+	        for (int j = 0; groupIndex < groupSizes.length && j < intervals.getIntervalCount(); j++) {
+	            lineageCounts.add(intervals.getLineageCount(j));
+	            intervalSizes.add(intervals.getInterval(j));
+	            if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
+	                subIndex += 1;
+	            }
+	            if (subIndex >= groupSizes[groupIndex]) {
+	            	
+	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
+	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
+	            	if (linkedMean) {
+	            		beta = prevMean * (alpha - 1.0);
+	            	}
+	            	
+	                groupIndex += 1;
+	                subIndex = 0;
+	                lineageCounts.clear();
+	                intervalSizes.clear();
+	            }
+	        }
+	        
+	        
+	        for (double d : popSizes) {
+	        	out.print(d + "\t");
+	        }
+	        for (int i : groupSizes) {
+        		out.print(i + "\t");
+        	}
+        } else {
+    		TreeInterface tree = treeInput.get();
+    		if (tree == null) {
+    			tree = treeIntervalsInput.get().treeInput.get();
+    		}
+    		// add epsilon=1e-10 so root falls in highest numbered epoch
+    		double rootHeight = tree.getRoot().getHeight() + 1e-10;
+    		double interval = rootHeight / groupCount;
+
+    		// sample population sizes
+            double currentThreshold = interval;
+            double prevThreshold = 0;
+            for (int j = 0; groupIndex < groupCount && j < intervals.getIntervalCount(); j++) {
+            	if (intervals.getIntervalTime(j) < currentThreshold) {
+            		if (j > 0 && intervalSizes.size() == 0) {
+                		intervalSizes.add(intervals.getIntervalTime(j) - prevThreshold);        		
+            		} else {
+            			intervalSizes.add(intervals.getInterval(j));
+            		}
+        			lineageCounts.add(intervals.getLineageCount(j));
+            	}
+            	if (intervals.getIntervalTime(j) >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
+            		lineageCounts.add(j > 0 ? intervals.getLineageCount(j-1) : 1);
+            		intervalSizes.add(currentThreshold - (j > 0 ? intervals.getIntervalTime(j-1) : 0.0));        		
+            		
+	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
+	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
+	            	if (linkedMean) {
+	            		beta = prevMean * (alpha - 1.0);
+	            	}
+                	
+                	if (linkedMean) {
+                		beta = prevMean * (alpha - 1.0);
+                	}
+                    groupIndex += 1;
+                    lineageCounts.clear();
+                    intervalSizes.clear();
+                    prevThreshold = currentThreshold;
+                    currentThreshold += interval;
+                }
+            }
+            
+	        for (double d : popSizes) {
+	        	out.print(d + "\t");
+	        }
+        	for (int i : groupSizes) {
+        		out.print(interval + "\t");
+        	}        	
         }
         if (logMeans) {
             for (double d : meanPopSizes) {
