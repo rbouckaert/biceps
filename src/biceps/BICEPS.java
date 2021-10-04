@@ -2,7 +2,6 @@ package biceps;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -11,7 +10,6 @@ import beast.app.beauti.Beauti;
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
 import beast.evolution.tree.coalescent.IntervalType;
 
@@ -37,6 +35,10 @@ public class BICEPS extends EpochTreeDistribution {
     public void initAndValidate() {
     	if (Beauti.isInBeauti()) {
     		return;
+    	}
+    	
+    	if (treeIntervalsInput.get() == null) {
+    		throw new IllegalArgumentException("treeIntervals input must be specified");
     	}
     	super.initAndValidate();
     	
@@ -70,14 +72,8 @@ public class BICEPS extends EpochTreeDistribution {
 	}
 	
 	private double calculateLogPbyEqualEpochs() {
-		Arrays.fill(lengths, 0.0);
-		Arrays.fill(eventCounts, 0);
-		TreeInterface tree = treeInput.get();
-		if (tree == null) {
-			tree = treeIntervalsInput.get().treeInput.get();
-		}
-		// add epsilon=1e-10 so root falls in highest numbered epoch
-		double rootHeight = tree.getRoot().getHeight() + 1e-10;
+		TreeInterface tree = intervals.treeInput.get();
+		double rootHeight = tree.getRoot().getHeight();
 		double interval = rootHeight / groupCount;
 		
 		alpha = populationShape.getValue();
@@ -86,28 +82,34 @@ public class BICEPS extends EpochTreeDistribution {
         logP = 0.0;
 
         int groupIndex = 0;
-        Integer [] groupSizes = this.groupSizes.getValues();
-
         List<Integer> lineageCounts = new ArrayList<>();
         List<Double> intervalSizes = new ArrayList<>();
         
         
         double currentThreshold = interval;
         double prevThreshold = 0;
+        int coalescentEvents = 0;
+        double accumulatedTime = 0;
         for (int j = 0; groupIndex < groupCount && j < intervals.getIntervalCount(); j++) {
-        	if (intervals.getIntervalTime(j) < currentThreshold && j < intervals.getIntervalCount()) {
+        	if (accumulatedTime < currentThreshold && j < intervals.getIntervalCount()) {
+        		accumulatedTime += intervals.getInterval(j);
         		if (j > 0 && intervalSizes.size() == 0) {
-            		intervalSizes.add(intervals.getIntervalTime(j) - prevThreshold);        		
+            		intervalSizes.add(accumulatedTime - prevThreshold);        		
         		} else {
         			intervalSizes.add(intervals.getInterval(j));
         		}
     			lineageCounts.add(intervals.getLineageCount(j));
+                if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
+    				coalescentEvents++;
+    			}
         	}
-        	if (intervals.getIntervalTime(j) >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
-        		lineageCounts.add(j > 0 ? intervals.getLineageCount(j-1) : 1);
-        		intervalSizes.add(currentThreshold - (j > 0 ? intervals.getIntervalTime(j-1) : 0.0));        		
+        	if (accumulatedTime >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
+        		if (currentThreshold < rootHeight - 1e-15) {
+        			lineageCounts.add(intervals.getLineageCount(j));
+        			intervalSizes.add(currentThreshold - (accumulatedTime - intervals.getIntervalTime(j)));
+        		}
         		
-            	logP += analyticalLogP(lineageCounts, groupSizes[groupIndex], intervalSizes);
+            	logP += analyticalLogP(lineageCounts, coalescentEvents, intervalSizes);
             	if (linkedMean) {
             		beta = prevMean * (alpha - 1.0);
             	}
@@ -116,6 +118,7 @@ public class BICEPS extends EpochTreeDistribution {
                 intervalSizes.clear();
                 prevThreshold = currentThreshold;
                 currentThreshold += interval;
+                coalescentEvents = 0;
             }
         }
         return logP;
@@ -156,6 +159,7 @@ public class BICEPS extends EpochTreeDistribution {
                 intervalSizes.clear();
             }
         }
+        
         return logP;
     }
 	
@@ -172,6 +176,8 @@ public class BICEPS extends EpochTreeDistribution {
     		List<Double> intervalSizes 
     		) {
 
+// System.err.println("\n" + eventCounts + " " + lineageCounts + " " + intervalSizes);    	
+    	
         double partialGamma = 0.0;
         // contributions of intervals
         for (int i = 0; i < lineageCounts.size(); i++) {
@@ -250,7 +256,7 @@ public class BICEPS extends EpochTreeDistribution {
 	            }
 	            if (subIndex >= groupSizes[groupIndex]) {
 	            	
-	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
+	            	popSizes[groupIndex] = sample(lineageCounts, lineageCounts.size(), intervalSizes);
 	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
 	            	if (linkedMean) {
 	            		beta = prevMean * (alpha - 1.0);
@@ -271,36 +277,36 @@ public class BICEPS extends EpochTreeDistribution {
         		out.print(i + "\t");
         	}
         } else {
-    		TreeInterface tree = treeInput.get();
-    		if (tree == null) {
-    			tree = treeIntervalsInput.get().treeInput.get();
-    		}
-    		// add epsilon=1e-10 so root falls in highest numbered epoch
-    		double rootHeight = tree.getRoot().getHeight() + 1e-10;
+    		TreeInterface tree = intervals.treeInput.get();
+    		double rootHeight = tree.getRoot().getHeight();
     		double interval = rootHeight / groupCount;
 
     		// sample population sizes
             double currentThreshold = interval;
             double prevThreshold = 0;
+            int coalescentEvents = 0;
+            double accumulatedTime = 0;
             for (int j = 0; groupIndex < groupCount && j < intervals.getIntervalCount(); j++) {
-            	if (intervals.getIntervalTime(j) < currentThreshold) {
+            	if (accumulatedTime < currentThreshold && j < intervals.getIntervalCount()) {
+            		accumulatedTime += intervals.getInterval(j);
             		if (j > 0 && intervalSizes.size() == 0) {
-                		intervalSizes.add(intervals.getIntervalTime(j) - prevThreshold);        		
+                		intervalSizes.add(accumulatedTime - prevThreshold);        		
             		} else {
             			intervalSizes.add(intervals.getInterval(j));
             		}
         			lineageCounts.add(intervals.getLineageCount(j));
+                    if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
+        				coalescentEvents++;
+        			}
             	}
-            	if (intervals.getIntervalTime(j) >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
-            		lineageCounts.add(j > 0 ? intervals.getLineageCount(j-1) : 1);
-            		intervalSizes.add(currentThreshold - (j > 0 ? intervals.getIntervalTime(j-1) : 0.0));        		
+            	if (accumulatedTime >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
+            		if (currentThreshold < rootHeight - 1e-15) {
+            			lineageCounts.add(intervals.getLineageCount(j));
+            			intervalSizes.add(currentThreshold - (accumulatedTime - intervals.getIntervalTime(j)));
+            		}
             		
-	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
+	            	popSizes[groupIndex] = sample(lineageCounts, lineageCounts.size(), intervalSizes);
 	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
-	            	if (linkedMean) {
-	            		beta = prevMean * (alpha - 1.0);
-	            	}
-                	
                 	if (linkedMean) {
                 		beta = prevMean * (alpha - 1.0);
                 	}
@@ -309,6 +315,7 @@ public class BICEPS extends EpochTreeDistribution {
                     intervalSizes.clear();
                     prevThreshold = currentThreshold;
                     currentThreshold += interval;
+                    coalescentEvents = 0;
                 }
             }
             
@@ -335,6 +342,9 @@ public class BICEPS extends EpochTreeDistribution {
     private double sample(List<Integer> lineageCounts, 
     		int eventCounts,
     		List<Double> intervalSizes ) {
+    	
+//    	System.err.println("\n" + eventCounts + " " + lineageCounts + " " + intervalSizes);
+    	
     	double a = 0; // = sum_j k_{jb}
 		a += eventCounts;
 		
