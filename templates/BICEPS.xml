@@ -9,7 +9,8 @@
         <subtemplate id='BICEPS' class='biceps.BICEPS'
                      mainid='BICEPS.t:$(n)'
                      suppressInputs='biceps.BICEPS.tree,
-                     biceps.BICEPS.treeIntervals'>
+                     biceps.BICEPS.treeIntervals,
+                     biceps.BICEPS.equalEpochs'>
             <![CDATA[
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"

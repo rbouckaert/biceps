@@ -61,8 +61,7 @@ public class BICEPS extends EpochTreeDistribution {
      */
     
 	@Override
-	public double calculateLogP() {
-		
+	public double calculateLogP() {		
     	if (!useEqualEpochs) {
     		logP = calculateLogPbyIntervals();
     	} else {
@@ -70,7 +69,7 @@ public class BICEPS extends EpochTreeDistribution {
     	}
     	return logP;
 	}
-	
+		
 	private double calculateLogPbyEqualEpochs() {
 		TreeInterface tree = intervals.treeInput.get();
 		double rootHeight = tree.getRoot().getHeight();
@@ -85,6 +84,7 @@ public class BICEPS extends EpochTreeDistribution {
         List<Integer> lineageCounts = new ArrayList<>();
         List<Double> intervalSizes = new ArrayList<>();
         
+        intervals.setIntervalsUnknown();
         
         double currentThreshold = interval;
         double prevThreshold = 0;
@@ -125,7 +125,7 @@ public class BICEPS extends EpochTreeDistribution {
 	}
 	
 	private double calculateLogPbyIntervals() {
-        if (!isPrepared && !useEqualEpochs) {
+        if (!isPrepared) {
             prepare();
         }
 
@@ -284,7 +284,6 @@ public class BICEPS extends EpochTreeDistribution {
     		// sample population sizes
             double currentThreshold = interval;
             double prevThreshold = 0;
-            int coalescentEvents = 0;
             double accumulatedTime = 0;
             for (int j = 0; groupIndex < groupCount && j < intervals.getIntervalCount(); j++) {
             	if (accumulatedTime < currentThreshold && j < intervals.getIntervalCount()) {
@@ -295,9 +294,6 @@ public class BICEPS extends EpochTreeDistribution {
             			intervalSizes.add(intervals.getInterval(j));
             		}
         			lineageCounts.add(intervals.getLineageCount(j));
-                    if (intervals.getIntervalType(j) == IntervalType.COALESCENT) {
-        				coalescentEvents++;
-        			}
             	}
             	if (accumulatedTime >= currentThreshold || j + 1 == intervals.getIntervalCount()) {
             		if (currentThreshold < rootHeight - 1e-15) {
@@ -315,7 +311,6 @@ public class BICEPS extends EpochTreeDistribution {
                     intervalSizes.clear();
                     prevThreshold = currentThreshold;
                     currentThreshold += interval;
-                    coalescentEvents = 0;
                 }
             }
             

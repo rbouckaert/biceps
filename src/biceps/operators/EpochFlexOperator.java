@@ -101,14 +101,17 @@ public class EpochFlexOperator extends Operator {
 		int scaled = 0;
 		for (int i = nodes.length/2+1; i < nodes.length; i++) {
 			Node node = nodes[i];
-			double h = node.getHeight();
-			if (h > intervalLow && h < intervalHi) {
-				h = intervalLow + scale * (h-intervalLow);
-				node.setHeight(h);
-				scaled++;
-			} else if (h > intervalHi) {				
-				h += delta;
-				node.setHeight(h);
+			if (!node.isFake()) {
+				// only change "real" internal nodes, not ancestral ones
+				double h = node.getHeight();
+				if (h > intervalLow && h < intervalHi) {
+					h = intervalLow + scale * (h-intervalLow);
+					node.setHeight(h);
+					scaled++;
+				} else if (h > intervalHi) {				
+					h += delta;
+					node.setHeight(h);
+				}
 			}
 		}
 		
