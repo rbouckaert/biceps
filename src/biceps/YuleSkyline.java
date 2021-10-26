@@ -54,12 +54,16 @@ public class YuleSkyline extends EpochTreeDistribution {
     	if (!useEqualEpochs) {
     		logP = calculateLogPbyIntervals();
     	} else {
-    		logP = calculateLogPbyEqualEpochs();
+    		logP = calculateLogPbyEqualEpochs(Double.NEGATIVE_INFINITY);
     	}
     	return logP;
 	}
-	
-	private double calculateLogPbyEqualEpochs() {
+
+	/**
+	 * @param threshold Nodes below threshold are ignored
+	 * @return logP
+	 */
+	protected double calculateLogPbyEqualEpochs(double threshold) {
 		Arrays.fill(lengths, 0.0);
 		Arrays.fill(eventCounts, 0);
 		TreeInterface tree = treeInput.get();
@@ -70,9 +74,11 @@ public class YuleSkyline extends EpochTreeDistribution {
 		double rootHeight = tree.getRoot().getHeight() + 1e-10;
 
 		for (Node node : tree.getInternalNodes()) {
-			eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
-			for (Node child : node.getChildren()) {
-				addLengths(child, rootHeight / groupCount);
+			if (node.getHeight() > threshold) {
+				eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
+				for (Node child : node.getChildren()) {
+					addLengths(child, rootHeight / groupCount);
+				}
 			}
 		}
 		

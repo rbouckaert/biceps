@@ -74,9 +74,11 @@ public class EpochTreeDistribution extends TreeDistribution {
         groupSizes.setDimension(groupCount);
         
         // make sure that the sum of groupsizes == number of coalescent events
-        int events = intervals.treeInput.get().getInternalNodeCount();
-        if (groupSizes.getDimension() > events) {
-            throw new IllegalArgumentException("There are more groups than coalescent nodes in the tree.");
+        if (!useEqualEpochs) {
+	        int events = intervals.treeInput.get().getInternalNodeCount();
+	        if (groupSizes.getDimension() > events) {
+	            throw new IllegalArgumentException("There are more groups than coalescent nodes in the tree.");
+	        }
         }
 
     	if (!useEqualEpochs) {
