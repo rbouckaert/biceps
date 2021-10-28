@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
 
@@ -226,10 +227,14 @@ public class YuleSkyline extends EpochTreeDistribution {
 
 	}
 	
-	@Override
-	public void log(long sampleNr, PrintStream out) {
-        super.log(sampleNr, out);
-        
+	
+	
+	/*
+	 * Sample birth rates and mean birth rates
+	 */
+	public double[][] sampleBirthRates() {
+		
+
         double [] birthRates = new double[groupCount];
     	double [] meanBirthRates = new double[groupCount];
 
@@ -302,6 +307,25 @@ public class YuleSkyline extends EpochTreeDistribution {
 	        }
 	        
 		}
+		
+		
+		double[][] result = new double[2][];
+		result[0] = birthRates;
+		result[1] = meanBirthRates;
+		return result;
+		
+	}
+	
+	
+	@Override
+	public void log(long sampleNr, PrintStream out) {
+        super.log(sampleNr, out);
+        
+        
+        double[][] rates = this.sampleBirthRates();
+        double [] birthRates = rates[0];
+    	double [] meanBirthRates = rates[1];
+        
 
 		for (double d : birthRates) {
         	out.print(d + "\t");
@@ -342,6 +366,7 @@ public class YuleSkyline extends EpochTreeDistribution {
 		return newLambda;
 	}
 
+    
     
 
     
