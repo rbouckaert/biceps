@@ -256,7 +256,7 @@ public class BICEPS extends EpochTreeDistribution {
 	            }
 	            if (subIndex >= groupSizes[groupIndex]) {
 	            	
-	            	popSizes[groupIndex] = sample(lineageCounts, lineageCounts.size(), intervalSizes);
+	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
 	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
 	            	if (linkedMean) {
 	            		beta = prevMean * (alpha - 1.0);

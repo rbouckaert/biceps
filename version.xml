@@ -1,4 +1,4 @@
-<package name='BICEPS' version='0.0.2'>
+<package name='BICEPS' version='1.0.0'>
 	<depends on='beast2' atleast='2.6.4'/>
 	<depends on='BEASTLabs' atleast='1.9.5'/>
 
