@@ -7,4 +7,9 @@
 			<map from="tsi.evolution.operators.SkewedScaleOperator" to="biceps.operators.TreeStretchOperator"/>
 
 
+ 	<packageapp description="BICEPSPopulationLogProducer"
+              class="biceps.tools.BICEPSPopulationLogProducer"
+              args=""
+            />
+
 </package>
