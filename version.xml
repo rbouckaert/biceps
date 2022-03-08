@@ -8,7 +8,7 @@
 
 
  	<packageapp description="BICEPSPopulationLogProducer"
-              class="biceps.tools.BICEPSPopulationLogProducer"
+              class="biceps.BICEPSPopulationLogProducer"
               args=""
             />
 

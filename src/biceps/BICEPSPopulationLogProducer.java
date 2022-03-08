@@ -1,4 +1,4 @@
-package biceps.tools;
+package biceps;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -17,7 +17,6 @@ import beast.core.util.Log;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.LogAnalyser;
-import biceps.BICEPS;
 
 @Description("Create log based on trace log and trees file")
 public class BICEPSPopulationLogProducer extends Runnable {
