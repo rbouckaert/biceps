@@ -18,12 +18,10 @@ import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.LogAnalyser;
 
-@Description("Create log based on trace log and trees file for BICEPS analysis. "
-		+ "This samples posterior population sizes for the epochs in the BICEPS analysis. "
-		+ "The log that is produced can be used with the tree file to generate a Demographic reconstruction, e.g. in Tracer")
-public class BICEPSPopulationLogProducer extends Runnable {
+@Description("Create log based on trace log and trees file for Yule Skyline analysis")
+public class YuleSkylineLogProducer extends Runnable {
 	final public Input<File> inFile = new Input<>("trace", "trace file containing population mean samples",  Validate.REQUIRED);
-    final public Input<String> populationMeanInput = new Input<>("populationMean", "label of the population mean in the trace file", "BICEPSPopSize");
+    final public Input<String> birthRateRateInput = new Input<>("birthRateRate", "label of the birth Rate Rate in the trace file", "YuleSkylineBirthRateRate");
 	final public Input<TreeFile> treesInput = new Input<>("trees","NEXUS file containing a tree set", Validate.REQUIRED);
 	final public Input<OutFile> outputInput = new Input<>("out", "output file. Print to stdout if not specified");
     final public Input<Integer> groupCountInput = new Input<>("groupCount", "the number of groups used, which determines the dimension of the groupSizes parameter. "
@@ -34,11 +32,7 @@ public class BICEPSPopulationLogProducer extends Runnable {
     		+ "from tree intervals, otherwise use equal sized epochs that scale with the tree height", false);
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", true);
-
-	
-    public Input<Double> ploidyInput = new Input<>("ploidy", "Ploidy (copy number) for the gene, typically a whole number or half (default is 2) "
-    		+ "autosomal nuclear: 2, X: 1.5, Y: 0.5, mitrochondrial: 0.5.", 2.0);
-    final public Input<RealParameter> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", new RealParameter("3.0"));
+    final public Input<RealParameter> birthRateShapeInput = new Input<>("birthRateShape", "Shape of the gamma prior distribution on birth rates.", Validate.REQUIRED);
 
 	@Override
 	public void initAndValidate() {
@@ -47,13 +41,13 @@ public class BICEPSPopulationLogProducer extends Runnable {
 	@Override
 	public void run() throws Exception {
 		LogAnalyser traceLog = new LogAnalyser(inFile.get().getPath(), 0, true, false);
-		int i = indexOf(traceLog.getLabels(), populationMeanInput.get());
+		int i = indexOf(traceLog.getLabels(), birthRateRateInput.get());
 		Double [] samples = traceLog.getTrace(0);
-		Double [] popMeans = null;
+		Double [] birthRateRates = null;
 		if (i >= 0) {
-			popMeans = traceLog.getTrace(i+1);		
+			birthRateRates = traceLog.getTrace(i+1);		
 		} else {
-			Log.warning("Cannot find trace \"" + populationMeanInput.get() + "\". Assuming popMean=1.0");
+			Log.warning("Cannot find trace \"" + birthRateRateInput.get() + "\". Assuming birthRateRate=1.0");
 		}
 		
 		PrintStream out = System.out;
@@ -69,27 +63,26 @@ public class BICEPSPopulationLogProducer extends Runnable {
         while (treeSet.hasNext()) {
         	Tree tree = treeSet.next();
     		TreeIntervals intervals = new TreeIntervals(tree);
-    		BICEPS biceps = new BICEPS();
-    		biceps.setID("BICEPS");
-    		biceps.initByName("linkedMean", true, 
-    				"ploidy", ploidyInput.get(), 
-    				"populationShape", populationShapeInput.get(), 
-    				"populationMean", popMeans == null ? "1.0" : popMeans[k]+"", 
+    		YuleSkyline ysk = new YuleSkyline();
+    		ysk.setID("YuleSkyline");
+    		ysk.initByName("linkedMean", true, 
+    				"birthRateShape", birthRateShapeInput.get(), 
+    				"birthRateRate", birthRateRates == null ? "1.0" : birthRateRates[k]+"", 
     				"groupCount", groupCountInput.get(),
     				"equalEpochs", useEqualEpochsInput.get(),
     				"linkedMean", linkedMeanInput.get(),
 //    				"groupSizes", "3 2",
     				"treeIntervals", intervals);
     		
-    		double logP = biceps.calculateLogP();
+    		double logP = ysk.calculateLogP();
     		if (k == 0) {
     			out.print("Sample\t");
-    			biceps.init(out);
+    			ysk.init(out);
         		out.println();
     		}
     		long sample = ((long)(double)samples[k]);
     		out.print(sample + "\t");
-    		biceps.log(sample, out);
+    		ysk.log(sample, out);
     		out.println();
         	k++;
         }
@@ -115,7 +108,7 @@ public class BICEPSPopulationLogProducer extends Runnable {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new Application(new BICEPSPopulationLogProducer(), "BICEPSPopulationLogProducer", args);
+		new Application(new YuleSkylineLogProducer(), "YuleSkylineLogProducer", args);
 	}
 
 }

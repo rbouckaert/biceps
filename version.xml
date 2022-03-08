@@ -12,4 +12,9 @@
               args=""
             />
 
+ 	<packageapp description="YuleSkylineLogProducer"
+              class="biceps.YuleSkylineLogProducer"
+              args=""
+            />
+
 </package>
