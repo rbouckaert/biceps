@@ -23,13 +23,13 @@ Install BEAST 2 (available from [http://beast2.org](http://beast2.org)) and inst
 
 <figure>
         <a id="fig:biceps1"></a>
-        <img style="width:25%;" src="figures/biceps1.png" alt="Manage packages menu in BEAUti">
+        <img style="width:25%;" src="images/biceps1.png" alt="Manage packages menu in BEAUti">
         <figcaption>Figure 1: Manage packages menu in BEAUti.</figcaption>
 </figure>
 
 <figure>
         <a id="fig:biceps2"></a>
-        <img style="width:75%;" src="figures/biceps2.png" alt="Package manager dialog">
+        <img style="width:75%;" src="images/biceps2.png" alt="Package manager dialog">
         <figcaption>Figure 2: Package manager dialog.</figcaption>
 </figure>
 
@@ -63,13 +63,13 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 
 <figure>
         <a id="fig:biceps3"></a>
-        <img style="width:25%;" src="figures/biceps3.png" alt="Import alignment menu in BEAUti">
+        <img style="width:25%;" src="images/biceps3.png" alt="Import alignment menu in BEAUti">
         <figcaption>Figure 3: Import alignment menu in BEAUti.</figcaption>
 </figure>
 
 <figure>
         <a id="fig:biceps4"></a>
-        <img style="width:95%;" src="figures/biceps4.png" alt="Partition panel after importing hcv.nexus in BEAUti">
+        <img style="width:95%;" src="images/biceps4.png" alt="Partition panel after importing hcv.nexus in BEAUti">
         <figcaption>Figure 4: Partition panel after importing hcv.nexus in BEAUti.</figcaption>
 </figure>
 
@@ -79,7 +79,7 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 
 <figure>
         <a id="fig:biceps5"></a>
-        <img style="width:95%;" src="figures/biceps5.png" alt="Site model panel in BEAUti">
+        <img style="width:95%;" src="images/biceps5.png" alt="Site model panel in BEAUti">
         <figcaption>Figure 5: Site model panel in BEAUti.</figcaption>
 </figure>
 
@@ -87,7 +87,7 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 
 <figure>
         <a id="fig:biceps6"></a>
-        <img style="width:95%;" src="figures/biceps6.png" alt="Site model panel in BEAUti">
+        <img style="width:95%;" src="images/biceps6.png" alt="Site model panel in BEAUti">
         <figcaption>Figure 6: Clock model panel in BEAUti.</figcaption>
 </figure>
 
@@ -96,7 +96,7 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 
 <figure>
         <a id="fig:biceps7"></a>
-        <img style="width:95%;" src="figures/biceps7.png" alt="Select BICEPS tree prior in BEAUti">
+        <img style="width:95%;" src="images/biceps7.png" alt="Select BICEPS tree prior in BEAUti">
         <figcaption>Figure 7: Select BICEPS tree prior in BEAUti.</figcaption>
 </figure>
 
@@ -104,7 +104,7 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 
 <figure>
         <a id="fig:biceps8"></a>
-        <img style="width:95%;" src="figures/biceps8.png" alt="BICEPS options in prior panel in BEAUti">
+        <img style="width:95%;" src="images/biceps8.png" alt="BICEPS options in prior panel in BEAUti">
         <figcaption>Figure 8: BICEPS options in prior panel in BEAUti.</figcaption>
 </figure>
 
@@ -127,7 +127,7 @@ populationMean (real number): Mean of the inverse gamma prior distribution on po
 
 <figure>
         <a id="fig:biceps9"></a>
-        <img style="width:95%;" src="figures/biceps9.png" alt="MCMC setting in BEAUti">
+        <img style="width:95%;" src="images/biceps9.png" alt="MCMC setting in BEAUti">
         <figcaption>Figure 9: MCMC setting in BEAUti.</figcaption>
 </figure>
 
@@ -145,7 +145,7 @@ Start BEAST and run the XML file `hcv_biceps.xml`. This produces a log file and 
 
 <figure>
         <a id="fig:biceps10"></a>
-        <img style="width:95%;" src="figures/biceps10.png" alt="Skyline reconstruction menu in Tracer">
+        <img style="width:95%;" src="images/biceps10.png" alt="Skyline reconstruction menu in Tracer">
         <figcaption>Figure 10: Skyline reconstruction menu in Tracer.</figcaption>
 </figure>
 
@@ -155,7 +155,7 @@ Start BEAST and run the XML file `hcv_biceps.xml`. This produces a log file and 
 
 <figure>
         <a id="fig:biceps11"></a>
-        <img style="width:95%;" src="figures/biceps11.png" alt="Skyline reconstruction panel in Tracer">
+        <img style="width:95%;" src="images/biceps11.png" alt="Skyline reconstruction panel in Tracer">
         <figcaption>Figure 11: Skyline reconstruction panel in Tracer.</figcaption>
 </figure>
 
@@ -164,7 +164,7 @@ Start BEAST and run the XML file `hcv_biceps.xml`. This produces a log file and 
 
 <figure>
         <a id="fig:biceps12"></a>
-        <img style="width:95%;" src="figures/biceps12.png" alt="Popualation history of HCV in Tracer">
+        <img style="width:95%;" src="images/biceps12.png" alt="Popualation history of HCV in Tracer">
         <figcaption>Figure 12: Popualation history of HCV in Tracer.</figcaption>
 </figure>
 
