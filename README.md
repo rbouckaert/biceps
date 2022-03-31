@@ -52,7 +52,7 @@ For population/speciation histories, use Tracer available [here](https://github.
 
 ## Tutorial 1: Using BICEPS for demographic reconstruction
 
-We will reconstruct the demographic history of Hepatitis C virus in Egypt, previously analysed in Drummond et al, 2005. The alignment is available [here](https://github.com/rbouckaert/biceps/blob/master/examples/nexus/hcv.nexus). We will set up analysis in BEAUti, run it in BEAST, then analyse results in Tracer.
+We will reconstruct the demographic history of Hepatitis C virus in Egypt, previously analysed in Drummond et al, 2005. The alignment is available [here](https://raw.githubusercontent.com/rbouckaert/biceps/master/examples/nexus/hcv.nexus). We will set up analysis in BEAUti, run it in BEAST, then analyse results in Tracer.
 
 ### Set up analysis in BEAUti
 
@@ -92,7 +92,7 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 </figure>
 
 
-> * Select the `Priors` panel in BEAUti. We will use a BICEPS tree prior: select `BICEPS` from the drop down box next to `Tree:t.hvc`.
+> * Select the `Priors` panel in BEAUti. We will use a BICEPS tree prior: select `BICEPS` from the drop down box next to `Tree.t:hvc`.
 
 <figure>
         <a id="fig:biceps7"></a>
@@ -112,8 +112,8 @@ We will reconstruct the demographic history of Hepatitis C virus in Egypt, previ
 BICEPS has the following options:
 
 * ploidy (real number): Ploidy (copy number) for the gene, typically a whole number or half (default is 2) autosomal nuclear: 2, X: 1.5, Y: 0.5, mitrochondrial: 0.5. 
-*  populationShape (real number): Shape of the inverse gamma prior distribution on population sizes. 
-populationMean (real number): Mean of the inverse gamma prior distribution on population sizes. 
+* populationShape (real number): Shape of the inverse gamma prior distribution on population sizes. 
+* populationMean (real number): Mean of the inverse gamma prior distribution on population sizes. 
 * groupCount (integer number): the number of groups used, which determines the dimension of the groupSizes parameter. If less than zero (default) 10 groups will be used, unless group sizes are larger than 30 (then group count = number of taxa/30) or less than 6 (then group count = number of taxa/6 (optional, default: -1)
 *  groupSizes (integer numbers): The group sizes parameter. Ignored if equalEpochs=true. If not estimated (estimate=false on this parameter), fixed group sizes will be used, otherwise they will be estimated.If not specified, a fixed set of group sizes determined by the groupCount input will be used. (optional)
 * equalEpochs (Boolean): if useEqualEpochs is false, use epochs based on groups from tree intervals, otherwise use equal sized epochs that scale with the tree height (optional, default: false)
@@ -174,8 +174,66 @@ Start BEAST and run the XML file `hcv_biceps.xml`. This produces a log file and 
 
 ## Tutorial 2: Using BICEPS for speciation through time
 
+We are going to use the same data as for the BICEPS tree prior from Tutorial 1, but now with the Yule skyline tree prior, which allows us to reconstruct the speciation rate of the virus. Since we already set up the site model, clock model and MCMC parameters before, we are gong to load the XML into BEAUti, then adjust the tree prior only.
 
-TODO
+> * Start BEAUti
+>
+> * Select the menu `File => Load`, and select the file `hcv_biceps.xml` that we saved before. The hcv-partition appears in the partitions panel in BEAUti.
+>
+> * Click the `Priors` panel, and select `Yule Skyline` from the drop down box next to `Tree.t:hcv`
+
+<figure>
+        <a id="fig:biceps13"></a>
+        <img style="width:95%;" src="images/biceps13.png" alt="Yule skyline prior in BEAUti">
+        <figcaption>Figure 13: Yule skyline prior in BEAUti.</figcaption>
+</figure>
+
+> * Click the small triangle next to `Yule Skyline` to show the options:
+
+<figure>
+        <a id="fig:biceps14"></a>
+        <img style="width:95%;" src="images/biceps14.png" alt="Yule skyline prior options in BEAUti">
+        <figcaption>Figure 14: Yule skyline prior options in BEAUti.</figcaption>
+</figure>
+
+> * Before saving as `hcv_yule_skyline.xml`, you might want to change the file names in the `MCMC` panel (if they are not using the `$(filebase)` phrase).
+
+YuleSkyline has the following options:
+
+* birthRateShape (real number): Shape of the gamma prior distribution on birth rates.
+* birthRateRate (real number): Rate of the gamma prior distribution on birth rates. 
+* groupCount, groupSizes, equalEpochs, linkedMean and logMeans are the same as for the BICEPS tree prior (see above in Tutorial 1).
+
+
+### Run MCMC in BEAST
+
+Start BEAST and run the XML file `hcv_yule_skyline.xml`. This produces a log file and a trees file that we will use for inferring the speciation history. It takes a few minutes to run, so this is a good time for a break.
+
+### Speciation rate reconstruction through time
+
+We can use Tracer to reconstruct the speciation rate of HCV through time.
+
+> * Start Tracer
+>
+> * Import the trace log file `hcv_yule_skyline.log` produced by the BEAST run, either by dragging the file from a file manager to the top left `Trace Files` list, or by clicking the small '+' button underneath that list and selecting the file via the file dialog.
+>
+> * Select menu `Analysis => Bayesian skyline reconstruction`. A dialog pops up with a number of options (see Figure 10).
+>
+> * Select the accompanying trees file by clicking the `Choose file` button next to `Trees log file` and select the trees file produced by BEAST (`hcv_yule_skyline.trees`).
+>
+> * Set age of the youngest tip to 1993. Setting the age makes the plot go forward in time. Leaving it zero makes the plot go backward in time. The panel should look like Figure 11, but with `hcv_yule_skyline.trees` instead of `hcv_biceps.trees` for the trees file.
+>
+> * Click the `OK` button. A dialog pops up with the speciation history displayed, which looks similar to this:
+
+
+<figure>
+        <a id="fig:biceps15"></a>
+        <img style="width:95%;" src="images/biceps15.png" alt="Yule skyline reconstruction in Tracer">
+        <figcaption>Figure 15: Yule skyline reconstruction in Tracer.</figcaption>
+</figure>
+
+The history accompanies the demographic reconstruction, which shows an explosion in the 1920s coinciding with a large speciation rate at the same time. Later, speciation rates decrease, but infections remain at a high level.
+
 
 ------------------------------------------------------------------------------------------
 
