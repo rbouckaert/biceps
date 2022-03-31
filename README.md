@@ -50,6 +50,7 @@ For population/speciation histories, use Tracer available [here](https://github.
 
 ------------------------------------------------------------------------------------------
 <div id="biceps-tutorial"></div>
+
 ## Tutorial 1: Using BICEPS for demographic reconstruction
 
 We will reconstruct the demographic history of Hepatitis C virus in Egypt, previously analysed in Drummond et al, 2005. The alignment is available [here](https://raw.githubusercontent.com/rbouckaert/biceps/master/examples/nexus/hcv.nexus). We will set up analysis in BEAUti, run it in BEAST, then analyse results in Tracer.
@@ -181,6 +182,7 @@ It is not unusual to find large stretches of horizontal lines near the root of t
 
 ------------------------------------------------------------------------------------------
 <div id="yule-skyline-tutorial"></div>
+
 ## Tutorial 2: Speciation through time using the Yule Skyline tree prior
 
 We are going to use the same data as for the BICEPS tree prior from Tutorial 1, but now with the Yule skyline tree prior, which allows us to reconstruct the speciation rate of the virus. Since we already set up the site model, clock model and MCMC parameters before, we are gong to load the XML into BEAUti, then adjust the tree prior only.
