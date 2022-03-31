@@ -8,6 +8,7 @@ You can use BICEPS when:
 * you are interested in inferring speciation histories,
 * you are *not* interested in population or speciation histories, but need a flexible coalescent tree prior that does not get in the way.
 
+Tutorials for [BICEPS](#biceps-tutorial) and [Yule-skyline](#yule-skyline-tutorial) on how to use below.
 
 ## Installation
 
@@ -41,7 +42,6 @@ For population/speciation histories, use Tracer available [here](https://github.
 
 ## Using BICEPS -- tl;dr
 
-* Start BEAUti, and select the Standard template  (menu `File/Templates/Standard`)
 * Use BEAUti to import an alignment and set up site and clock models
 * In the priors tab, select `BICEPS` or `Yule Skyline` from the drop down menu associated with the tree prior
 * Run BEAST on the XML file saved from BEAUti
@@ -49,7 +49,7 @@ For population/speciation histories, use Tracer available [here](https://github.
 
 
 ------------------------------------------------------------------------------------------
-
+<div id="biceps-tutorial"></div>
 ## Tutorial 1: Using BICEPS for demographic reconstruction
 
 We will reconstruct the demographic history of Hepatitis C virus in Egypt, previously analysed in Drummond et al, 2005. The alignment is available [here](https://raw.githubusercontent.com/rbouckaert/biceps/master/examples/nexus/hcv.nexus). We will set up analysis in BEAUti, run it in BEAST, then analyse results in Tracer.
@@ -169,10 +169,19 @@ Start BEAST and run the XML file `hcv_biceps.xml`. This produces a log file and 
 </figure>
 
 
+### Trouble shooting
+
+It is not unusual to find large stretches of horizontal lines near the root of the tree, since BICEPS assumes a piecewise constant population size within each epoch. The length of an epoch is determined by the number of groups. Group sizes are equally sized (with at most a difference of 1 in group sizes). There are two ways to reduce the long stretches of horizontal lines in the reconstruction:
+
+* increase the number of groups by setting the `group count` entry in the BICEPS options. This way, the long epoch may be split up into smaller intervals.
+* If the estimated flag is not set on `group sizes`, they remain constant throughout the MCMC, which helps with mixing, but may result in large groups near the root. Setting the estimate flag checked for the BICEPS prior allows estimation of group sizes and usually results in more variability in the reconstruction.
+
+
+
 
 ------------------------------------------------------------------------------------------
-
-## Tutorial 2: Using BICEPS for speciation through time
+<div id="yule-skyline-tutorial"></div>
+## Tutorial 2: Speciation through time using the Yule Skyline tree prior
 
 We are going to use the same data as for the BICEPS tree prior from Tutorial 1, but now with the Yule skyline tree prior, which allows us to reconstruct the speciation rate of the virus. Since we already set up the site model, clock model and MCMC parameters before, we are gong to load the XML into BEAUti, then adjust the tree prior only.
 
@@ -196,13 +205,15 @@ We are going to use the same data as for the BICEPS tree prior from Tutorial 1, 
         <figcaption>Figure 14: Yule skyline prior options in BEAUti.</figcaption>
 </figure>
 
-> * Before saving as `hcv_yule_skyline.xml`, you might want to change the file names in the `MCMC` panel (if they are not using the `$(filebase)` phrase).
-
 YuleSkyline has the following options:
 
 * birthRateShape (real number): Shape of the gamma prior distribution on birth rates.
 * birthRateRate (real number): Rate of the gamma prior distribution on birth rates. 
-* groupCount, groupSizes, equalEpochs, linkedMean and logMeans are the same as for the BICEPS tree prior (see above in Tutorial 1).
+* groupCount, groupSizes, equalEpochs, linkedMean and logMeans are the same as for the BICEPS tree prior (see listed in Tutorial 1).
+
+
+> * Before saving as `hcv_yule_skyline.xml`, you might want to change the file names in the `MCMC` panel (if they are not using the `$(filebase)` phrase).
+
 
 
 ### Run MCMC in BEAST
@@ -250,6 +261,7 @@ Remco R Bouckaert. "An Efficient Coalescent Epoch Model for Bayesian Phylogeneti
 [DOI:10.1093/sysbio/syac015](https://doi.org/10.1093/sysbio/syac015)
 
 Drummond AJ, Rambaut A, Shapiro BE, Pybus OG. "Bayesian coalescent inference of past population dynamics from molecular sequences", Molecular Biology and Evolution. 22(5):1185-92, 2005.
+
 
 
 
