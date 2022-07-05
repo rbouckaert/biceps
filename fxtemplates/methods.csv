@@ -1,0 +1,2 @@
+"BICEPS.t:$(n)","BICEPS tree prior",cite(BICEPS.t:$(n))," with population mean","populationMean"
+"YuleSkyline.t:$(n)","Yule skyline tree prior",cite(BICEPS.t:$(n))," with birth rate rate","birthRateRate"

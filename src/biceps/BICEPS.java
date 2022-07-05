@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
 
-import beast.app.beauti.Beauti;
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.TreeInterface;
-import beast.evolution.tree.coalescent.IntervalType;
+import beastfx.app.beauti.Beauti;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.evolution.tree.IntervalType;
 
 @Description("Bayesian Integrated Coalescent Epoch PlotS: "
 		+ "Bayesian skyline plot that integrates out population sizes under an inverse gamma prior")

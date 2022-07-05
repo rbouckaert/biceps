@@ -3,16 +3,16 @@ package biceps.operators;
 
 import java.text.DecimalFormat;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.parameter.IntegerParameter;
-import beast.core.Input.Validate;
-import beast.evolution.operators.KernelDistribution;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.core.Input.Validate;
+import beast.base.inference.operator.kernel.KernelDistribution;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeIntervals;
+import beast.base.util.Randomizer;
 
 @Description("Scale operator that scales random epoch in a tree")
 public class EpochFlexOperator extends Operator {

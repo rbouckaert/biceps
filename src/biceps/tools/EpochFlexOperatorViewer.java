@@ -34,12 +34,12 @@ import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import beast.app.util.Utils;
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Randomizer;
+import beastfx.app.util.Utils;
 
 @Description("Visualises epoch flex operator")
 public class EpochFlexOperatorViewer extends JPanel implements BEASTInterface {

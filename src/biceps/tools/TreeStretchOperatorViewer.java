@@ -11,7 +11,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-import beast.evolution.tree.Node;
+import beast.base.evolution.tree.Node;
 
 public class TreeStretchOperatorViewer extends EpochFlexOperatorViewer {
 	private static final long serialVersionUID = 1L;

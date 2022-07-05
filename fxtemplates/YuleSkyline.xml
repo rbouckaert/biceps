@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+       namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.math.distributions'>
 
 
  <!-- tree priors -->
@@ -27,17 +27,17 @@
 
 		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
 
-	    	<operator id="YuleSkylineEpochTop.t:$(n)" spec="biceps.operators.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
-	    	<operator id="YuleSkylineEpochAll.t:$(n)" spec="biceps.operators.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
-    		<operator id="YuleSkylineTreeFlex.t:$(n)" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="2.0"/>
+	    	<operator id="YuleSkylineEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
+	    	<operator id="YuleSkylineEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
+    		<operator id="YuleSkylineTreeFlex.t:$(n)" spec="beast.base.evolution.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="2.0"/>
     <!--
-		    <operator id="YuleSkylineTreeFlexUpDown.t:$(n)" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" meanRate="@strict.clock" weight="2.0"/>
+		    <operator id="YuleSkylineTreeFlexUpDown.t:$(n)" spec="beast.base.evolution.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" meanRate="@strict.clock" weight="2.0"/>
    -->
 
 
-            <operator id='YuleSkylineTreeRootScaler.t:$(n)' spec='beast.evolution.operators.BactrianScaleOperator' scaleFactor="0.1" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
-            <operator id='YuleSkylineUniformOperator.t:$(n)' spec='beast.evolution.operators.BactrianNodeOperator' weight="30" tree="@Tree.t:$(n)"/>
-            <operator id='YuleSkylineSubtreeSlide.t:$(n)' spec='beast.evolution.operators.BactrianSubtreeSlide' weight="15" size="1.0" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineTreeRootScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
+            <operator id='YuleSkylineUniformOperator.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianNodeOperator' weight="30" tree="@Tree.t:$(n)"/>
+            <operator id='YuleSkylineSubtreeSlide.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianSubtreeSlide' weight="15" size="1.0" tree="@Tree.t:$(n)"/>
             <operator id='YuleSkylineNarrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
             <operator id='YuleSkylineWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
             <operator id='YuleSkylineWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>

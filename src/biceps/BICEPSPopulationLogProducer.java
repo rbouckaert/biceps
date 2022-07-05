@@ -4,19 +4,19 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
 
-import beast.app.treeannotator.TreeAnnotator;
-import beast.app.util.Application;
-import beast.app.util.OutFile;
-import beast.app.util.TreeFile;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Runnable;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.util.LogAnalyser;
+import beastfx.app.treeannotator.TreeAnnotator;
+import beastfx.app.tools.Application;
+import beastfx.app.util.OutFile;
+import beastfx.app.util.TreeFile;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Runnable;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Log;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeIntervals;
+import beastfx.app.tools.LogAnalyser;
 
 @Description("Create log based on trace log and trees file for BICEPS analysis. "
 		+ "This samples posterior population sizes for the epochs in the BICEPS analysis. "

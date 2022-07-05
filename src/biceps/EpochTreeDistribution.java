@@ -1,12 +1,12 @@
 package biceps;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
-import beast.evolution.tree.TreeDistribution;
-import beast.evolution.tree.TreeInterface;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.evolution.tree.TreeDistribution;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.evolution.tree.TreeIntervals;
+import beast.base.util.Randomizer;
 
 @Description("Base class for epoch-based tree distributions like BICEPS and YuleSkyline")
 public class EpochTreeDistribution extends TreeDistribution {
@@ -18,7 +18,7 @@ public class EpochTreeDistribution extends TreeDistribution {
     		"The group sizes parameter. Ignored if equalEpochs=true. "
     		+ "If not estimated (estimate=false on this parameter), fixed group sizes will be used, otherwise they will be estimated."
     		+ "If not specified, a fixed set of group sizes determined by the groupCount input will be used.");
-    final public Input<Boolean> useEqualEpochsInput = new Input<>("equalEpochs", "if useEqualEpochs is false, use epochs based on groups "
+    final public Input<Boolean> useEqualEpochsInput = new Input<>("equalEpochs", "if equalEpochs is false, use epochs based on groups "
     		+ "from tree intervals, otherwise use equal sized epochs that scale with the tree height", false);
     final public Input<Boolean> linkedMeanInput = new Input<>("linkedMean", "use populationMean only for first epoch, and for other epochs "
     		+ "use the posterior mean of the previous epoch", false);

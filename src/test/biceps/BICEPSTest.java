@@ -5,10 +5,10 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.util.Randomizer;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeIntervals;
+import beast.base.util.Randomizer;
 import biceps.BICEPS;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;

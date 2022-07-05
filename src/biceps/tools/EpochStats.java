@@ -1,20 +1,21 @@
 package biceps.tools;
 
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.app.treeannotator.TreeAnnotator;
-import beast.app.util.Application;
-import beast.app.util.OutFile;
-import beast.app.util.TreeFile;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Runnable;
-import beast.core.util.Log;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.coalescent.IntervalType;
-import beast.evolution.tree.coalescent.TreeIntervals;
+import beastfx.app.treeannotator.TreeAnnotator;
+import beastfx.app.tools.Application;
+import beastfx.app.util.OutFile;
+import beastfx.app.util.TreeFile;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Runnable;
+import beast.base.core.Log;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.IntervalType;
+import beast.base.evolution.tree.TreeIntervals;
 
 @Description("Produce trace log with epoch (tree length) statistics for a tree file")
 public class EpochStats extends Runnable {
@@ -46,7 +47,7 @@ public class EpochStats extends Runnable {
 		int[] groupSizes = null;
 		
 		
-		beast.app.treeannotator.TreeAnnotator.MemoryFriendlyTreeSet srcTreeSet = new TreeAnnotator(). new MemoryFriendlyTreeSet(treeInput.get().getPath(), 0);
+		beastfx.app.treeannotator.TreeAnnotator.MemoryFriendlyTreeSet srcTreeSet = new TreeAnnotator(). new MemoryFriendlyTreeSet(treeInput.get().getPath(), 0);
 		srcTreeSet.reset();
 		int k = 0;
 		while (srcTreeSet.hasNext()) {

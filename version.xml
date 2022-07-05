@@ -1,6 +1,6 @@
-<package name='BICEPS' version='1.0.0'>
-	<depends on='beast2' atleast='2.6.4'/>
-	<depends on='BEASTLabs' atleast='1.9.5'/>
+<package name='BICEPS' version='1.1.0'>
+	<depends on='BEAST.base' atleast='2.7.0'/>
+	<depends on='BEAST.app' atleast='2.7.0'/>
 
 			<map from="IBSP" to="biceps.BICEPS"/>
 			<map from="tsi.evolution.operators.EpochOperator" to="biceps.operators.EpochFlexOperator"/>
