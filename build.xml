@@ -13,11 +13,11 @@
 	<property name="libBICEPS" location="lib" />
 	<property name="release_dir" value="release" />
 	<property name="distBICEPS" location="${buildBICEPS}/dist" />
-	<property name="beast2path" location="../beast2" />
+	<property name="beast2path" location="../beast2.6" />
 	<property name="libBeast2" location="${beast2path}/lib" />
 	<property name="srcBeast2" location="${beast2path}/src" />
 	<property name="beast2classpath" location="${beast2path}/build" />
-	<property name="BEASTLabsclasspath" location="../BEASTLabs/build" />
+	<property name="BEASTLabsclasspath" location="../BEASTLabs2.6/build" />
 	<property name="BICEPSclasspath" location="../biceps/build" />
 	<property name="boosterclasspath" location="../beastbooster/build" />
 	<property name="SNAPPclasspath" location="../SNAPP/build" />

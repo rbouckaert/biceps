@@ -80,8 +80,9 @@ public class TreeStretchOperator extends EpochFlexOperator {
 				double h2 = right.getHeight() + oldLengths[right.getNr()] * scale;
 				//h2 = Math.max(h1, h2);
 				h2 = (h1+ h2)/2.0;
-				logHR += Math.log(h2/node.getHeight());
-				// logHR += Math.log(scale);
+				double oldLength = oldLengths[left.getNr()] + oldLengths[right.getNr()];
+				double newLength = h2 - left.getHeight() + h2 - right.getHeight();
+				logHR += Math.log(newLength / oldLength);
 				node.setHeight(h2);
 			}
 		}
