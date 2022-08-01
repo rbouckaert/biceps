@@ -17,7 +17,7 @@
                >
                 <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
                 <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
-                <treeIntervals spec='TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
+                <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
              <prior id="YuleSkylineBirthRateRatePrior.t:$(n)" name="distribution" x="@YuleSkylineBirthRateRate.t:$(n)">
@@ -25,7 +25,7 @@
             </prior>
 
 
-		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
+		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
 
 	    	<operator id="YuleSkylineEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
 	    	<operator id="YuleSkylineEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      

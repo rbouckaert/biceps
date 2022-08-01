@@ -17,4 +17,14 @@
               args=""
             />
 
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="biceps.BICEPS"/>
+        <provider classname="biceps.BICEPSPopulationLogProducer"/>
+        <provider classname="biceps.EpochTreeDistribution"/>
+        <provider classname="biceps.operators.EpochFlexOperator"/>
+        <provider classname="biceps.operators.TreeStretchOperator"/>
+        <provider classname="biceps.YuleSkyline"/>
+        <provider classname="biceps.YuleSkylineLogProducer"/>
+    </service>
+
 </package>

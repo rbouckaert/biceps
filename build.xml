@@ -17,7 +17,8 @@
 	<property name="libBeast2" location="${beast2path}/lib" />
 	<property name="srcBeast2" location="${beast2path}/src" />
 	<property name="beast2classpath" location="${beast2path}/build" />
-	<property name="BEASTLabsclasspath" location="../BEASTLabs/build" />
+    <property name="beastapp2path" location="../BeastFX" />
+    <property name="beastapp2classpath" location="${beastapp2path}/build" />
 	<property name="BICEPSclasspath" location="../biceps/build" />
 	<property name="boosterclasspath" location="../beastbooster/build" />
 	<property name="SNAPPclasspath" location="../SNAPP/build" />
@@ -31,16 +32,15 @@
 
 	<path id="classpath">
         <pathelement path="${buildBICEPS}"/>
-		<fileset dir="${libBeast2}" includes="junit-4.8.2.jar"/>
+        <fileset dir="${libBeast2}/junit" includes="junit-platform-console-standalone-1.8.2.jar"/>
+        <fileset dir="${libBeast2}" includes="commons-math3-3.6.1.jar"/>
 		<fileset dir="${libBeast2}" includes="fest.jar"/>
-	    <fileset dir="${libBeast2}" includes="commons-math3-3.1.1.jar"/>
-		<fileset dir="${libBeast2}" includes="jam.jar"/>
 		<fileset dir="${libBeast2}" includes="colt.jar"/>
-		<fileset dir="${libBeast2}" includes="antlr-runtime-4.7.jar"/>
+        <fileset dir="${libBeast2}" includes="antlr-runtime-4.10.1.jar"/>   
 		<fileset dir="${libBeast2}" includes="beagle.jar"/>
 		<fileset dir="../Babel/lib" includes="itextpdf-5.5.9.jar"/>
         <pathelement path="${beast2classpath}"/>
-        <pathelement path="${BEASTLabsclasspath}"/>
+        <pathelement path="${beastapp2classpath}"/>
         <pathelement path="${BICEPSclasspath}"/>        
 	</path>
 

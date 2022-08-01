@@ -21,7 +21,7 @@
                >
                 <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
                 <populationMean id="BICEPSPopSize.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
-                <treeIntervals spec='TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
+                <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
              <prior id="BICEPSPopSizePrior.t:$(n)" name="distribution" x="@BICEPSPopSize.t:$(n)">
@@ -29,7 +29,7 @@
             </prior>
 
 
-		    <operator id='BICEPSPopSizesScaler.t:$(n)' spec='BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@BICEPSPopSize.t:$(n)"/>
+		    <operator id='BICEPSPopSizesScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@BICEPSPopSize.t:$(n)"/>
 
 	    	<operator id="BICEPSEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
 	    	<operator id="BICEPSEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
