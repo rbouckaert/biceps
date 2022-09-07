@@ -10,7 +10,9 @@
                      mainid='BICEPS.t:$(n)'
                      suppressInputs='biceps.BICEPS.tree,
                      biceps.BICEPS.treeIntervals,
-                     biceps.BICEPS.equalEpochs'>
+                     biceps.BICEPS.equalEpochs'
+                     hmc="BICEPS/index/=Priors/BICEPS/,
+                     BICEPSPopSizePrior/index/=Priors/BICEPS/#population-mean-hyper-prior">
             <![CDATA[
             <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"

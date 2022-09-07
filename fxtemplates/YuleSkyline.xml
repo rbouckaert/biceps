@@ -9,7 +9,9 @@
         <subtemplate id='YuleSkyline' class='biceps.YuleSkyline'
                      mainid='YuleSkyline.t:$(n)'
                      suppressInputs='biceps.YuleSkyline.tree,
-                     biceps.YuleSkyline.treeIntervals'>
+                     biceps.YuleSkyline.treeIntervals'
+                     hmc="YuleSkyline/index/=Priors/YuleSkyline/,
+                     YuleSkylineBirthRateRatePrior/index/=Priors/YuleSkyline/#birth-rate-rate-hyper-prior">
             <![CDATA[
             <distribution spec="biceps.YuleSkyline" id='YuleSkyline.t:$(n)'
                 birthRateShape="2.0"
