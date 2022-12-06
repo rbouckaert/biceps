@@ -13,6 +13,7 @@ import beast.base.core.Input;
 import beast.base.core.Input.Validate;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.core.Log;
+import beast.base.core.ProgramStatus;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.TreeInterface;
 import beast.base.evolution.tree.IntervalType;
@@ -32,7 +33,7 @@ public class YuleSkyline extends EpochTreeDistribution {
 
     @Override
     public void initAndValidate() {
-    	if (Beauti.isInBeauti()) {
+    	if (ProgramStatus.name.equals("BEAUti")) {
     		return;
     	}
     	super.initAndValidate();
@@ -76,7 +77,14 @@ public class YuleSkyline extends EpochTreeDistribution {
 
 		for (Node node : tree.getInternalNodes()) {
 			if (node.getHeight() > threshold) {
-				eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
+				try {
+					eventCounts[(int)(node.getHeight() * groupCount / rootHeight)]++;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					// this indicates an internal node is more than 1e-10 higher than the root
+					// that is, we have a negative branch length
+					logP = Double.NEGATIVE_INFINITY;
+					return logP;
+				}
 				for (Node child : node.getChildren()) {
 					addLengths(child, rootHeight / groupCount);
 				}
