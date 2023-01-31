@@ -10,9 +10,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
+import beast.base.core.Description;
 import beast.base.evolution.tree.Node;
 
+@Description("Visualise the tree stretch operator")
 public class TreeStretchOperatorViewer extends EpochFlexOperatorViewer {
 	private static final long serialVersionUID = 1L;
 
