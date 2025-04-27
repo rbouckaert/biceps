@@ -129,7 +129,8 @@ public class EpochTreeDistribution extends TreeDistribution {
                 // ... otherwise assume the user has made a mistake setting
                 // initial group sizes.
                 throw new IllegalArgumentException(
-                        "The sum of the initial group sizes does not match the number of coalescent events in the tree.");
+                        "The sum of the initial group sizes does not match the number of coalescent events in the tree:" + eventsCovered + "!=" + events
+                        + "\nConsider setting groupCount to the desired number of groups");
             }
         }
 

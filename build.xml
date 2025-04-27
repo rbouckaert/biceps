@@ -1,5 +1,5 @@
 <!-- Build BICEPS. It is also used by Hudson BICEPS project. JUnit test is available for this build. -->
-<project basedir="." default="addon" name="BUILD_BICEPS">
+<project basedir="." default="package" name="BUILD_BICEPS">
 	<description>
 	    Build BICEPS. 
             Also used by Hudson BICEPS project. 
@@ -51,6 +51,10 @@
         <fail unless="versionAvailable">
               ** Required file version.xml does not exist. **
         </fail>
+
+        <xmlproperty file="version.xml" prefix="fromVersionFile" />
+        <property name="projName" value="${fromVersionFile.package(name)}" />
+        <property name="projVersion" value="${fromVersionFile.package(version)}" />
 
         <!-- Read package name and version from xml file -->
         <xmlproperty file="${BICEPSdir}/version.xml" prefix="fromVersionFile" />
@@ -191,9 +195,11 @@
 	</target>
 
 
-	<target name="addon"
+	<target name="package"
 	        depends="build_jar_all_BICEPS_NoJUnitTest"
 	        description="release BEAST 2 add-on version of BICEPS">
+
+        <property name="fullName" value="${projName}.v${projVersion}"/>
 
 		<delete dir="${Add_on_dir}" />
 		<!-- Create the release directory -->
@@ -227,12 +233,38 @@
 			<fileset file="fxtemplates/methods.csv" />
 		</copy>
 
-		<jar jarfile="${distBICEPS}/BICEPS.addon.v${BICEPSversion}.zip">
+		<jar jarfile="${distBICEPS}/${fullName}.zip">
 			<fileset dir="${Add_on_dir}">
 				<include name="**/*" />
 			</fileset>
         </jar>
 		<echo message="Add-on version v${BICEPSversion} release is finished." />
 	</target>
+
+
+ 	<condition property="isWindows"><os family="windows" /></condition>
+	<condition property="isLinux"><and><os family="unix"/><not><os family="mac"/></not></and></condition>
+	<condition property="isMac"><os family="mac" /></condition>
+
+	<target name="installLinux" depends="package" if="isLinux">
+	        <mkdir dir="${user.home}/.beast/2.7/${projName}"/>
+			<unzip src="${distBICEPS}/${fullName}.zip" dest="${user.home}/.beast/2.7/${projName}"/>
+	</target>
+
+	<target name="installMac" depends="package" if="isMac">
+	        <mkdir dir="${user.home}/.beast/2.7/${projName}"/>
+			<unzip src="${distBICEPS}/${fullName}.zip" dest="${user.home}/Library/Application Support/BEAST/2.7/${projName}"/>
+	</target>
+
+	<target name="installWindows" depends="package" if="isWindows">
+	        <mkdir dir="${user.home}/BEAST/2.7/${projName}"/>
+			<unzip src="${distBICEPS}/${fullName}.zip" dest="${user.home}/BEAST/2.7/${projName}"/>
+	</target>
+
+	<target name="install" depends="installWindows,installMac,installLinux">
+	</target>
+	
+
+
 
 </project>
