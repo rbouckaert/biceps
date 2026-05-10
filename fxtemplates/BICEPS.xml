@@ -21,8 +21,8 @@
                 logMeans="false"
                 equalEpochs="false"
                >
-                <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
-                <populationMean id="BICEPSPopSize.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
+                <groupSizes id="BICEPSGroupSizes.t:$(n)" spec="beast.base.spec.inference.parameter.IntVectorParam" domain="PositiveInt" dimension="10" estimate="false">1</groupSizes>
+                <populationMean id="BICEPSPopSize.t:$(n)" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.0" estimate="true"/>
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 

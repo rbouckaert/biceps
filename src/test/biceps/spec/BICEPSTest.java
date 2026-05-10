@@ -1,4 +1,4 @@
-package test.biceps;
+package test.biceps.spec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -8,8 +8,10 @@ import org.junit.Test;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeIntervals;
+import beast.base.spec.domain.PositiveReal;
+import beast.base.spec.inference.parameter.RealScalarParam;
 import beast.base.util.Randomizer;
-import biceps.BICEPS;
+import biceps.spec.BICEPS;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 
@@ -23,8 +25,8 @@ public class BICEPSTest extends TestCase {
 		BICEPS biceps = new BICEPS();
 		biceps.initByName("linkedMean", true, 
 				"ploidy", "1", 
-				"populationShape", "3.0", 
-				"populationMean", "1.0", 
+				"populationShape", new RealScalarParam<PositiveReal>(3.0, PositiveReal.INSTANCE), 
+				"populationMean", new RealScalarParam<PositiveReal>(1.0, PositiveReal.INSTANCE), 
 				"groupCount", 2,
 //				"groupSizes", "3 2",
 				"treeIntervals", intervals);
@@ -39,7 +41,7 @@ public class BICEPSTest extends TestCase {
 		PrintStream out = new PrintStream(baos);
 		biceps.log(0l, out);
 		String log = baos.toString();
-		System.err.println(log);		
+		System.err.println(log);
 		assertEquals("2.959105012256057	0.2493291107385713	0.26862164687420126	3	2	", log);		
 	}
 
@@ -51,8 +53,8 @@ public class BICEPSTest extends TestCase {
 		BICEPS biceps = new BICEPS();
 		biceps.initByName("linkedMean", true, 
 				"ploidy", "1", 
-				"populationShape", "3.0", 
-				"populationMean", "1.0", 
+				"populationShape", new RealScalarParam<PositiveReal>(3.0, PositiveReal.INSTANCE), 
+				"populationMean", new RealScalarParam<PositiveReal>(1.0, PositiveReal.INSTANCE), 
 				"groupCount", 2,
 				"equalEpochs", true,
 //				"groupSizes", "3 2",

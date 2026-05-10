@@ -17,8 +17,8 @@
                 birthRateShape="2.0"
                 linkedMean="true" logMeans="false"
                >
-                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
-                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
+                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="beast.base.spec.inference.parameter.IntVectorParam" domain="PositiveInt" dimension="10" estimate="false">1</groupSizes>
+                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="beast.base.spec.inference.parameter.RealSclarParam" domain="PositiveReal" value="1.0"  estimate="true"/>
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
