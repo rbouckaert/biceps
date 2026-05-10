@@ -14,7 +14,7 @@
                      hmc="BICEPS/index/=Priors/BICEPS/,
                      BICEPSPopSizePrior/index/=Priors/BICEPS/#population-mean-hyper-prior">
             <![CDATA[
-            <distribution spec="biceps.BICEPS" id='BICEPS.t:$(n)'
+            <distribution spec="biceps.spec.BICEPS" id='BICEPS.t:$(n)'
                 populationShape="3.0"
                 ploidy="1.0"
                 linkedMean="true" 
@@ -26,20 +26,23 @@
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='BICEPSTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
-             <prior id="BICEPSPopSizePrior.t:$(n)" name="distribution" x="@BICEPSPopSize.t:$(n)">
-                <LogNormal meanInRealSpace="true" name="distr" M="1" S="1"/>
-            </prior>
+
+            <distribution id="BICEPSPopSizePrior.t:$(n)" spec='beast.base.spec.inference.distribution.LogNormal' param='@BICEPSPopSize.t:$(n)' >
+                <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="Real"
+                       value="1.0"/>
+                <S spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal"
+                       value="1.0"/>
+            </distribution>
 
 
 		    <operator id='BICEPSPopSizesScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@BICEPSPopSize.t:$(n)"/>
 
-	    	<operator id="BICEPSEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
-	    	<operator id="BICEPSEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
-    		<operator id="BICEPSTreeFlex.t:$(n)" spec="beast.base.evolution.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="2.0"/>
+	    	<operator id="BICEPSEpochTop.t:$(n)" spec="biceps.spec.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
+	    	<operator id="BICEPSEpochAll.t:$(n)" spec="biceps.spec.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
+    		<operator id="BICEPSTreeFlex.t:$(n)" spec="biceps.spec.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="2.0"/>
     <!--
-		    <operator id="BICEPSTreeFlexUpDown.t:$(n)" spec="beast.base.evolution.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" meanRate="@strict.clock" weight="2.0"/>
+		    <operator id="BICEPSTreeFlexUpDown.t:$(n)" spec="biceps.spec.operator.TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" meanRate="@strict.clock" weight="2.0"/>
    -->
-
 
             <operator id='BICEPSTreeRootScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
             <operator id='BICEPSUniformOperator.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianNodeOperator' weight="30" tree="@Tree.t:$(n)"/>
@@ -48,8 +51,8 @@
             <operator id='BICEPSWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
             <operator id='BICEPSWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
 
-			<operator id='BICEPSGroupSizesDelta.t:$(n)' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
-                              intparameter="@BICEPSGroupSizes.t:$(n)"/>
+			<operator id='BICEPSGroupSizesDelta.t:$(n)' spec='beast.base.spec.inference.operator.DeltaExchangeOperator' delta="1" weight="6" integer="true"
+                              ivparameter="@BICEPSGroupSizes.t:$(n)"/>
 ]]>
             <connect srcID='BICEPS.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BICEPS.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent with Integrated Bayesian epoch prior for tree t:$(n)

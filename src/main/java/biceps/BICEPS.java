@@ -1,19 +1,18 @@
-package biceps.spec;
-
+package biceps;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.GammaDistribution;
+import org.apache.commons.statistics.distribution.GammaDistribution;
 
 import beastfx.app.beauti.Beauti;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 import beast.base.evolution.tree.TreeInterface;
-import beast.base.spec.domain.PositiveReal;
-import beast.base.spec.type.RealScalar;
 import beast.base.evolution.tree.IntervalType;
 
 @Description("Bayesian Integrated Coalescent Epoch PlotS: "
@@ -21,11 +20,11 @@ import beast.base.evolution.tree.IntervalType;
 public class BICEPS extends EpochTreeDistribution {
     public Input<Double> ploidyInput = new Input<>("ploidy", "Ploidy (copy number) for the gene, typically a whole number or half (default is 2) "
     		+ "autosomal nuclear: 2, X: 1.5, Y: 0.5, mitrochondrial: 0.5.", 2.0);
-    final public Input<RealScalar<PositiveReal>> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
-    final public Input<RealScalar<PositiveReal>> populationMeanInput = new Input<>("populationMean", "Mean of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
+    final public Input<RealParameter> populationShapeInput = new Input<>("populationShape", "Shape of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
+    final public Input<RealParameter> populationMeanInput = new Input<>("populationMean", "Mean of the inverse gamma prior distribution on population sizes.", Validate.REQUIRED);
 
-    private RealScalar<PositiveReal> populationShape;
-    private RealScalar<PositiveReal> populationMean;
+    private RealParameter populationShape;
+    private RealParameter populationMean;
     
 	 // alpha: alpha parameter of inverse Gamma prior on pop sizes
 	 // beta: dito but beta parameters
@@ -78,8 +77,8 @@ public class BICEPS extends EpochTreeDistribution {
 		double rootHeight = tree.getRoot().getHeight();
 		double interval = rootHeight / groupCount;
 		
-		alpha = populationShape.get();
-        beta = populationMean.get() * (alpha - 1.0);
+		alpha = populationShape.getValue();
+        beta = populationMean.getValue() * (alpha - 1.0);
 
         logP = 0.0;
 
@@ -133,13 +132,13 @@ public class BICEPS extends EpochTreeDistribution {
         }
 
         
-        alpha = populationShape.get();
-        beta = populationMean.get() * (alpha - 1.0);
+        alpha = populationShape.getValue();
+        beta = populationMean.getValue() * (alpha - 1.0);
 
         logP = 0.0;
 
         int groupIndex = 0;
-        int [] groupSizes = this.groupSizes.getValues();
+        Integer [] groupSizes = this.groupSizes.getValues();
         int subIndex = 0;
 
         List<Integer> lineageCounts = new ArrayList<>();
@@ -210,20 +209,20 @@ public class BICEPS extends EpochTreeDistribution {
 	@Override
 	public void init(PrintStream out) {
 		super.init(out);
-        for (int i = 1; i <= groupSizes.size(); i++) {
+        for (int i = 1; i <= groupSizes.getDimension(); i++) {
         	out.print("PopSizes." + i+ "\t");
         }
         if (!useEqualEpochs) {
-        	for (int i = 1; i <= groupSizes.size(); i++) {
+        	for (int i = 1; i <= groupSizes.getDimension(); i++) {
         		out.print("GroupSizes." + i+ "\t");
         	}
         } else {
-        	for (int i = 1; i <= groupSizes.size(); i++) {
+        	for (int i = 1; i <= groupSizes.getDimension(); i++) {
         		out.print("IntervalSizes." + i+ "\t");
         	}
         }
         if (logMeans) {
-            for (int i = 1; i <= groupSizes.size(); i++) {
+            for (int i = 1; i <= groupSizes.getDimension(); i++) {
             	out.print("MeanPopSizes." + i+ "\t");
             }
         }
@@ -236,11 +235,11 @@ public class BICEPS extends EpochTreeDistribution {
             prepare();
         }
         
-        alpha = populationShape.get();
-        beta = populationMean.get() * (alpha - 1.0);
+        alpha = populationShape.getValue();
+        beta = populationMean.getValue() * (alpha - 1.0);
 
         int groupIndex = 0;
-        int [] groupSizes = this.groupSizes.getValues();
+        Integer [] groupSizes = this.groupSizes.getValues();
         int subIndex = 0;
 
         List<Integer> lineageCounts = new ArrayList<>();
@@ -260,7 +259,7 @@ public class BICEPS extends EpochTreeDistribution {
 	            if (subIndex >= groupSizes[groupIndex]) {
 	            	
 	            	popSizes[groupIndex] = sample(lineageCounts, groupSizes[groupIndex], intervalSizes);
-	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.get() : prevMean;
+	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
 	            	if (linkedMean) {
 	            		beta = prevMean * (alpha - 1.0);
 	            	}
@@ -305,7 +304,7 @@ public class BICEPS extends EpochTreeDistribution {
             		}
             		
 	            	popSizes[groupIndex] = sample(lineageCounts, lineageCounts.size(), intervalSizes);
-	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.get() : prevMean;
+	            	meanPopSizes[groupIndex] = groupIndex == 0 || !linkedMean ? populationMean.getValue() : prevMean;
                 	if (linkedMean) {
                 		beta = prevMean * (alpha - 1.0);
                 	}
@@ -360,8 +359,9 @@ public class BICEPS extends EpochTreeDistribution {
 		prevMean = beta / (alpha - 1);
 		 
 		// https://stats.stackexchange.com/questions/224714/sampling-from-an-inverse-gamma-distribution
-		GammaDistribution g = new GammaDistribution(myRandomizer, alpha, 1.0/beta, GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
-		double newN = 1.0/g.sample();
+//		GmmaDistribution g = new GammaDistribution(myRandomizer, alpha, 1.0/beta, GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+		GammaDistribution g = GammaDistribution.of(alpha, 1.0/beta);
+		double newN = 1.0/g.inverseCumulativeProbability(Randomizer.nextDouble());
 		return newN;
 	}
 

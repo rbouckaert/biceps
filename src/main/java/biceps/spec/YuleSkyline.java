@@ -1,12 +1,13 @@
 package biceps.spec;
 
 
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.GammaDistribution;
+import org.apache.commons.statistics.distribution.GammaDistribution;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -17,6 +18,7 @@ import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.TreeInterface;
 import beast.base.spec.domain.PositiveReal;
 import beast.base.spec.type.RealScalar;
+import beast.base.util.Randomizer;
 import beast.base.evolution.tree.IntervalType;
 
 @Description("Skyline version of Yule tree prior that integrates out birth rate parameters"
@@ -270,8 +272,11 @@ public class YuleSkyline extends EpochTreeDistribution {
 			for (int k = groupCount-1; k >= 0; k--) {
 		        prevMean = (alpha + eventCounts[k])/(beta + lengths[k]);
 		        
-		        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts[k], 1.0/(beta + lengths[k]), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
-		        birthRates[k] = g.sample();
+		        //GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts[k], 1.0/(beta + lengths[k]), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+		        //birthRates[k] = g.sample();
+		        GammaDistribution g = GammaDistribution.of(alpha + eventCounts[k], 1.0/(beta + lengths[k]));
+		        birthRates[k] = g.inverseCumulativeProbability(Randomizer.nextDouble());
+
 		        meanBirthRates[k] = k == groupCount-1 ? birthRateShape.get()/birthRateRate.get() : prevMean;
 
 	        	if (linkedMean) {
@@ -370,8 +375,10 @@ public class YuleSkyline extends EpochTreeDistribution {
         
         prevMean = (alpha + eventCounts)/(beta + L);
 
-        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, 1.0/(beta + L), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
-        double newLambda = g.sample();
+        //GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, 1.0/(beta + L), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+        //double newLambda = g.sample();
+        GammaDistribution g = GammaDistribution.of(alpha + eventCounts, 1.0/(beta + L));
+        double newLambda = g.inverseCumulativeProbability(Randomizer.nextDouble());
 		return newLambda;
 	}
 

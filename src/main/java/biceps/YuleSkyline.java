@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.GammaDistribution;
+import org.apache.commons.statistics.distribution.GammaDistribution;
 
 import beastfx.app.beauti.Beauti;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
 import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
 import beast.base.core.Log;
 import beast.base.core.ProgramStatus;
 import beast.base.evolution.tree.Node;
@@ -269,8 +270,8 @@ public class YuleSkyline extends EpochTreeDistribution {
 			for (int k = groupCount-1; k >= 0; k--) {
 		        prevMean = (alpha + eventCounts[k])/(beta + lengths[k]);
 		        
-		        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts[k], 1.0/(beta + lengths[k]), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
-		        birthRates[k] = g.sample();
+		        GammaDistribution g = GammaDistribution.of(alpha + eventCounts[k], 1.0/(beta + lengths[k]));
+		        birthRates[k] = g.inverseCumulativeProbability(Randomizer.nextDouble());
 		        meanBirthRates[k] = k == groupCount-1 ? birthRateShape.getValue()/birthRateRate.getValue() : prevMean;
 
 	        	if (linkedMean) {
@@ -369,8 +370,10 @@ public class YuleSkyline extends EpochTreeDistribution {
         
         prevMean = (alpha + eventCounts)/(beta + L);
 
-        GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, 1.0/(beta + L), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
-        double newLambda = g.sample();
+        //GammaDistribution g = new GammaDistribution(myRandomizer, alpha + eventCounts, 1.0/(beta + L), GammaDistribution.DEFAULT_INVERSE_ABSOLUTE_ACCURACY);
+        //double newLambda = g.sample();
+        GammaDistribution g = GammaDistribution.of(alpha + eventCounts, 1.0/(beta + L));
+        double newLambda = g.inverseCumulativeProbability(Randomizer.nextDouble());
 		return newLambda;
 	}
 
