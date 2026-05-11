@@ -6,28 +6,30 @@
     <mergewith point='treePriorTemplates'>
 
         <!-- Yule/Pure birth for Bayesian skyline -->
-        <subtemplate id='YuleSkyline' class='biceps.YuleSkyline'
+        <subtemplate id='YuleSkyline' class='biceps.spec.YuleSkyline'
                      mainid='YuleSkyline.t:$(n)'
-                     suppressInputs='biceps.YuleSkyline.tree,
-                     biceps.YuleSkyline.treeIntervals'
+                     suppressInputs='biceps.spec.YuleSkyline.tree,
+                     biceps.spec.YuleSkyline.treeIntervals'
                      hmc="YuleSkyline/index/=Priors/YuleSkyline/,
                      YuleSkylineBirthRateRatePrior/index/=Priors/YuleSkyline/#birth-rate-rate-hyper-prior">
             <![CDATA[
-            <distribution spec="biceps.YuleSkyline" id='YuleSkyline.t:$(n)'
+            <distribution spec="biceps.spec.YuleSkyline" id='YuleSkyline.t:$(n)'
                 birthRateShape="2.0"
                 linkedMean="true" logMeans="false"
                >
                 <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="beast.base.spec.inference.parameter.IntVectorParam" domain="PositiveInt" dimension="10" estimate="false">1</groupSizes>
-                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="beast.base.spec.inference.parameter.RealSclarParam" domain="PositiveReal" value="1.0"  estimate="true"/>
+                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.0"  estimate="true"/>
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
-             <prior id="YuleSkylineBirthRateRatePrior.t:$(n)" name="distribution" x="@YuleSkylineBirthRateRate.t:$(n)">
-                <LogNormal meanInRealSpace="true" name="distr" M="1" S="1"/>
-            </prior>
+            <distribution id="YuleSkylineBirthRateRatePrior.t:$(n)" spec='beast.base.spec.inference.distribution.LogNormal' param='@YuleSkylineBirthRateRate.t:$(n)' >
+                <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="Real"
+                       value="1.0"/>
+                <S spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal"
+                       value="1.0"/>
+            </distribution>
 
-
-		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
+		    <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='beast.base.spec.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
 
 	    	<operator id="YuleSkylineEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
 	    	<operator id="YuleSkylineEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
@@ -94,19 +96,19 @@
 
 
         <!-- Yule/Pure birth for Bayesian skyline -->
-        <subtemplate id='YuleSkyline' class='biceps.YuleSkyline'
+        <subtemplate id='YuleSkyline' class='biceps.spec.YuleSkyline'
                      mainid='YuleSkyline.t:$(n)'
-                     suppressInputs='biceps.YuleSkyline.tree,
-                     biceps.YuleSkyline.treeIntervals'
+                     suppressInputs='biceps.spec.YuleSkyline.tree,
+                     biceps.spec.YuleSkyline.treeIntervals'
                      hmc="YuleSkyline/index/=Priors/YuleSkyline/,
                      YuleSkylineBirthRateRatePrior/index/=Priors/YuleSkyline/#birth-rate-rate-hyper-prior">
             <![CDATA[
-            <distribution spec="biceps.YuleSkyline" id='YuleSkyline.t:$(n)'
+            <distribution spec="biceps.spec.YuleSkyline" id='YuleSkyline.t:$(n)'
                 birthRateShape="2.0"
                 linkedMean="true" logMeans="false"
                >
-                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="parameter.IntegerParameter" dimension="10" estimate="false">1</groupSizes>
-                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="parameter.RealParameter" value="1.0" lower="0.0" estimate="true"/>
+                <groupSizes id="YuleSkylineGroupSizes.t:$(n)" spec="beast.base.spec.inference.parameter.IntVectorParam" domain="PositiveInt" dimension="10" estimate="false">1</groupSizes>
+                <birthRateRate id="YuleSkylineBirthRateRate.t:$(n)" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.0"  estimate="true"/>
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='YuleSkylineBirthRateTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
 
@@ -115,7 +117,7 @@
             </prior>
 
 
-          <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
+          <operator id='YuleSkylineBirthRateRateScaler.t:$(n)' spec='beast.base.spec.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@YuleSkylineBirthRateRate.t:$(n)"/>
 
          <operator id="YuleSkylineEpochTop.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
          <operator id="YuleSkylineEpochAll.t:$(n)" spec="beast.base.evolution.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      

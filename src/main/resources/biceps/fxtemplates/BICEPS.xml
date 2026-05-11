@@ -6,11 +6,11 @@
     <mergewith point='treePriorTemplates'>
 
         <!-- Coalescent for Bayesian skyline -->
-        <subtemplate id='BICEPS' class='biceps.BICEPS'
+        <subtemplate id='BICEPS' class='biceps.spec.BICEPS'
                      mainid='BICEPS.t:$(n)'
-                     suppressInputs='biceps.BICEPS.tree,
-                     biceps.BICEPS.treeIntervals,
-                     biceps.BICEPS.equalEpochs'
+                     suppressInputs='biceps.spec.BICEPS.tree,
+                     biceps.spec.BICEPS.treeIntervals,
+                     biceps.spec.BICEPS.equalEpochs'
                      hmc="BICEPS/index/=Priors/BICEPS/,
                      BICEPSPopSizePrior/index/=Priors/BICEPS/#population-mean-hyper-prior">
             <![CDATA[
@@ -35,7 +35,7 @@
             </distribution>
 
 
-		    <operator id='BICEPSPopSizesScaler.t:$(n)' spec='beast.base.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@BICEPSPopSize.t:$(n)"/>
+		    <operator id='BICEPSPopSizesScaler.t:$(n)' spec='beast.base.spec.evolution.operator.kernel.BactrianScaleOperator' scaleFactor="0.1" weight="5" parameter="@BICEPSPopSize.t:$(n)"/>
 
 	    	<operator id="BICEPSEpochTop.t:$(n)" spec="biceps.spec.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1"/>
 	    	<operator id="BICEPSEpochAll.t:$(n)" spec="biceps.spec.operator.EpochFlexOperator" tree="@Tree.t:$(n)" weight="2.0" scaleFactor="0.1" fromOldestTipOnly="false"/>      
