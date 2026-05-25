@@ -46,6 +46,10 @@ public class EpochFlexOperator extends Operator {
     			throw new IllegalArgumentException("treeIntervals must be specified if groupSizes are specified");
     		}
     	}
+    	if (treeInput.get().getLeafNodeCount() <= 2) {
+    		throw new IllegalArgumentException("Tree should have more than 2 taxa for EpochFlexOperator to work. "
+    				+ "Remove the operator or use a tree with more taxa");
+    	}
 	}	
 	
 	public EpochFlexOperator(){}
